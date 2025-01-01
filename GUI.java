@@ -54,7 +54,6 @@ public class GUI{
     title.setFont(new Font("Bebas Neue", Font.BOLD, 34)); //Setting the size and font of the title
     title.setBorder(BorderFactory.createLineBorder(Color.BLACK));
     title.setAlignmentX(title.CENTER_ALIGNMENT);
-    title.setBackground(new Color(188,253,73));//import java.awt.Color;
 
 
 
@@ -66,10 +65,7 @@ public class GUI{
 
     button1 = new JButton("Solve Questions");
     button1.setFont(new Font("Bebas Neue", Font.BOLD,20));
-    button1.setBackground(new Color(188,253,73));//import java.awt.Color;
-    button1.setForeground(Color.BLACK);
-    button1.setFocusPainted(false);
-    button1.setBorderPainted(true); 
+
     
 
     
@@ -91,6 +87,7 @@ public class GUI{
     buttonsPanel1.add(Box.createVerticalGlue()); 
 
     button2 = new JButton("Practice Test");
+    button2.setFont(new Font("Bebas Neue", Font.BOLD,20));
 
 
     buttonsPanel2 = new JPanel();
@@ -105,7 +102,8 @@ public class GUI{
 
 
 
-    button3 = new JButton("Edit Questions");
+    button3 = new JButton("Add/Edit Questions");
+    button3.setFont(new Font("Bebas Neue", Font.BOLD,20));
 
     buttonsPanel3 = new JPanel();
     buttonsPanel3.setLayout(new BoxLayout(buttonsPanel3, BoxLayout.Y_AXIS));
