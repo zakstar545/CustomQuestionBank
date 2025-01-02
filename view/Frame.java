@@ -1,5 +1,7 @@
 package view;
 
+import view.SolveQuestionsPage;
+
 //Import all of swing and awt
 import javax.swing.*;
 import java.awt.*;
@@ -33,19 +35,16 @@ public class Frame extends JFrame{
     homePage = new HomePage(cardLayout, mainPanel);
     mainPanel.add(homePage, "Home");
 
-    //Solve Questions Page (WILL BE ADDED LATER)
+    //Solve Questions Page
     solveQuestionsPage = new SolveQuestionsPage();
     mainPanel.add(solveQuestionsPage, "SolveQuestions");
 
-
-
-    
-    
-    
     //Now we can add the mainPanel to the frame, and call other
     //methods to set the frame properties
 
     add(mainPanel);
+    setPreferredSize(new Dimension(1200, 800)); // Set preferred size for the frame
+        setResizable(true); // Allow the frame to be resizable
     pack();
     setLocationRelativeTo(null);
     setVisible(true);

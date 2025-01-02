@@ -1,124 +1,116 @@
 package view;
 
-//Import all of swing and awt
+// Import all of swing and awt
 import javax.swing.*;
 import java.awt.*;
 
-public class HomePage extends JPanel{
+public class HomePage extends JPanel {
 
+    private JLabel title;
+    private JButton solveQuestionsButton;
+    private JButton practiceTestButton;
+    private JButton modifyButton;
+    private JPanel titlePanel;
+    private JPanel buttonsPanels;
+    private JPanel solveQuestionsButtonPanel;
+    private JPanel practiceTestButtonPanel;
+    private JPanel modifyButtonPanel;
 
-  private JLabel title;
-  private JButton button1;
-  private JButton button2;
-  private JButton button3;
-  private JPanel titlePanel;
-  private JPanel buttonsPanels;
-  private JPanel buttonsPanel1;
-  private JPanel buttonsPanel2;
-  private JPanel buttonsPanel3;
+    public HomePage(CardLayout cardLayout, JPanel mainPanel) {
+        setLayout(new BorderLayout());
+        setBackground(new Color(245, 245, 245)); // Set background color
 
-  public HomePage(CardLayout cardLayout, JPanel mainPanel){
-    setLayout(new GridLayout(2,0));
-    
-    //Initializing the title Panel and calling JPanel methods
-    //to set up its properties
-    titlePanel = new JPanel();
-    titlePanel.setBackground(Color.lightGray);
-    titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
-    titlePanel.setBorder(BorderFactory.createEmptyBorder(50, 100, 50, 100));
+        // Initializing the title Panel and calling JPanel methods
+        // to set up its properties
+        titlePanel = new JPanel();
+        titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
+        titlePanel.setBorder(BorderFactory.createEmptyBorder(50, 100, 50, 100));
+        titlePanel.setBackground(new Color(245, 245, 245)); // Set background color
 
+        // Initializing the title label and setting its properties
+        title = new JLabel("Custom Question Bank"); // Creating a label
+        title.setFont(new Font("Bebas Neue", Font.BOLD, 34)); // Setting the size and font of the title
+        title.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 
+        // These methods work to keep the title centered
+        // both vertically and horizontally
+        titlePanel.add(Box.createVerticalGlue());
+        titlePanel.add(title);
+        titlePanel.add(Box.createVerticalGlue());
 
-    //Initializing the title labal and setting its properties
-    title = new JLabel("CUSTOM QUESTION BANK APP");  //Creating a label
-    title.setFont(new Font("Bebas Neue", Font.BOLD, 34)); //Setting the size and font of the title
-    title.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-    title.setAlignmentX(title.CENTER_ALIGNMENT);
+        // Initializing the buttonsPanel and setting its properties
+        buttonsPanels = new JPanel();
+        buttonsPanels.setLayout(new GridLayout(0, 3));
+        buttonsPanels.setBackground(new Color(245, 245, 245)); // Set background color
 
+        // Initializing the first button and setting its properties
+        solveQuestionsButton = new JButton("Solve Questions");
+        solveQuestionsButton.setFont(new Font("Bebas Neue", Font.BOLD, 20));
+        solveQuestionsButton.setBackground(new Color(220, 220, 220)); // Set button background color
+        solveQuestionsButton.setFocusPainted(false);
 
-    //These methods work to keep the title centered
-    //both vertically and horizontally
-    titlePanel.add(Box.createVerticalGlue()); 
-    titlePanel.add(title);
-    titlePanel.add(Box.createVerticalGlue()); 
+        // Initializing the first button panel which
+        // will contain the first button
+        solveQuestionsButtonPanel = new JPanel();
+        solveQuestionsButtonPanel.setLayout(new BoxLayout(solveQuestionsButtonPanel, BoxLayout.Y_AXIS));
+        solveQuestionsButtonPanel.setBackground(new Color(245, 245, 245)); // Set background color
 
-    //Initializing the first button and setting its properties
-    button1 = new JButton("Solve Questions");
-    button1.setFont(new Font("Bebas Neue", Font.BOLD,20));
+        // These methods keep the button centered in its panel
+        // horizontally and vertically
+        solveQuestionsButton.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        solveQuestionsButtonPanel.add(Box.createVerticalGlue());
+        solveQuestionsButtonPanel.add(solveQuestionsButton);
+        solveQuestionsButtonPanel.add(Box.createVerticalGlue());
 
+        // Repeating the process for the other buttons
+        practiceTestButton = new JButton("Practice Test");
+        practiceTestButton.setFont(new Font("Bebas Neue", Font.BOLD, 20));
+        practiceTestButton.setBackground(new Color(220, 220, 220)); // Set button background color
+        practiceTestButton.setFocusPainted(false);
 
+        practiceTestButtonPanel = new JPanel();
+        practiceTestButtonPanel.setLayout(new BoxLayout(practiceTestButtonPanel, BoxLayout.Y_AXIS));
+        practiceTestButtonPanel.setBackground(new Color(245, 245, 245)); // Set background color
 
-    //Initializing the buttonsPanel and setting its properties
-    buttonsPanels = new JPanel();
-    buttonsPanels.setLayout(new GridLayout(0,3));
+        practiceTestButton.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        practiceTestButtonPanel.add(Box.createVerticalGlue());
+        practiceTestButtonPanel.add(practiceTestButton);
+        practiceTestButtonPanel.add(Box.createVerticalGlue());
 
-    //Initializing the first button panel which
-    //will contain the first button
-    buttonsPanel1 = new JPanel();
-    buttonsPanel1.setLayout(new BoxLayout(buttonsPanel1, BoxLayout.Y_AXIS));
-    buttonsPanel1.setBackground(Color.lightGray);
+        modifyButton = new JButton("Modify Questions");
+        modifyButton.setFont(new Font("Bebas Neue", Font.BOLD, 20));
+        modifyButton.setBackground(new Color(220, 220, 220)); // Set button background color
+        modifyButton.setFocusPainted(false);
 
-    //These methods keep the button centered in its panel
-    //horizontally and vertically
-    button1.setAlignmentX(button1.CENTER_ALIGNMENT);    
-    buttonsPanel1.add(Box.createVerticalGlue()); 
-    buttonsPanel1.add(button1);
-    buttonsPanel1.add(Box.createVerticalGlue()); 
+        modifyButtonPanel = new JPanel();
+        modifyButtonPanel.setLayout(new BoxLayout(modifyButtonPanel, BoxLayout.Y_AXIS));
+        modifyButtonPanel.setBackground(new Color(245, 245, 245)); // Set background color
 
-    //Repeating the proccess for the other buttons
-    button2 = new JButton("Practice Test");
-    button2.setFont(new Font("Bebas Neue", Font.BOLD,20));
+        modifyButton.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        modifyButtonPanel.add(Box.createVerticalGlue());
+        modifyButtonPanel.add(modifyButton);
+        modifyButtonPanel.add(Box.createVerticalGlue());
 
+        // Adding the 3 button panels to the main
+        // parent button panel
+        buttonsPanels.add(solveQuestionsButtonPanel);
+        buttonsPanels.add(practiceTestButtonPanel);
+        buttonsPanels.add(modifyButtonPanel);
 
-    buttonsPanel2 = new JPanel();
-    buttonsPanel2.setLayout(new BoxLayout(buttonsPanel2, BoxLayout.Y_AXIS));
-    buttonsPanel2.setBackground(Color.lightGray);
+        // Adding the title panel and buttons panel to the main panel
+        add(titlePanel, BorderLayout.NORTH);
+        add(buttonsPanels, BorderLayout.CENTER);
+    }
 
-    button2.setAlignmentX(button2.CENTER_ALIGNMENT);
+    public JButton getSolveQuestionsButton() {
+        return solveQuestionsButton;
+    }
 
-    buttonsPanel2.add(Box.createVerticalGlue()); 
-    buttonsPanel2.add(button2);
-    buttonsPanel2.add(Box.createVerticalGlue()); 
+    public JButton getPracticeTestButton() {
+        return practiceTestButton;
+    }
 
-
-
-    button3 = new JButton("Add/Edit Questions");
-    button3.setFont(new Font("Bebas Neue", Font.BOLD,20));
-
-    buttonsPanel3 = new JPanel();
-    buttonsPanel3.setLayout(new BoxLayout(buttonsPanel3, BoxLayout.Y_AXIS));
-    buttonsPanel3.setBackground(Color.lightGray);
-
-    button3.setAlignmentX(button3.CENTER_ALIGNMENT);
-
-    buttonsPanel3.add(Box.createVerticalGlue()); 
-    buttonsPanel3.add(button3);
-    buttonsPanel3.add(Box.createVerticalGlue()); 
-
-
-
-    //Adding the 3 button panels to the main 
-    //parent button panel
-    buttonsPanels.add(buttonsPanel1);
-    buttonsPanels.add(buttonsPanel2);
-    buttonsPanels.add(buttonsPanel3);
-
-
-    //Finally, we add the two main panels to the main panel
-    add(titlePanel);
-    add(buttonsPanels);
-  }
-
-  public JButton getButton1() {
-    return button1;
-  }
-
-  public JButton getButton2() {
-     return button2;
-  }
-
-  public JButton getButton3() {
-     return button3;
-  }
-  
+    public JButton getModifyButton() {
+        return modifyButton;
+    }
 }

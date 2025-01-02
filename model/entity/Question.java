@@ -6,15 +6,51 @@ import javax.swing.ImageIcon;
 
 public class Question {
     public enum Difficulty {
-        EASY, MEDIUM, HARD
+        EASY("Easy"), MEDIUM("Medium"), HARD("Hard");
+
+        private final String label;
+
+        Difficulty(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return label;
+        }
     }
 
     public enum TimeToSolve {
-        ZERO_TO_ONE, ONE_TO_FIVE, FIVE_TO_FIFTEEN, FIFTEEN_TO_THIRTYFIVE, THIRTYFIVE_TO_SIXTY
+        ZERO_TO_ONE("0-1"), 
+        ONE_TO_FIVE("1-5"), 
+        FIVE_TO_FIFTEEN("5-15"), 
+        FIFTEEN_TO_THIRTYFIVE("15-35"), 
+        THIRTYFIVE_TO_SIXTY("35-60");
+
+        private final String label;
+
+        TimeToSolve(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return label;
+        }
     }
 
     public enum Paper {
-        ONE, TWO, THREE
+        ONE("1"),
+        TWO("2"),
+        THREE("3");
+
+        private final String label;
+
+        Paper(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return label;
+        }        
     }
 
     private int id;    //unique code for identifying the question
@@ -26,10 +62,11 @@ public class Question {
     private ImageIcon questionImage;    //Image associated with the question
     private ImageIcon markschemeImage; //Image associated with the markscheme
     private int marks;    //marks for the question
+    private String title;
 
     public static SubjectTopicManager globalSubjectTopicManager = new SubjectTopicManager();
 
-    public Question(int id, String subject, String topic, Difficulty difficulty, TimeToSolve timeToSolve, Paper paper, ImageIcon questionImage, ImageIcon markschemeImage, int marks) {
+    public Question(int id, String subject, String topic, Difficulty difficulty, TimeToSolve timeToSolve, Paper paper, ImageIcon questionImage, ImageIcon markschemeImage, int marks, String title) {
         if (!globalSubjectTopicManager.isValidSubject(subject)) {
             globalSubjectTopicManager.addSubject(subject);
         }
@@ -46,6 +83,7 @@ public class Question {
         this.questionImage = questionImage;
         this.markschemeImage = markschemeImage;
         this.marks = marks;
+        this.title = title;
     }
 
     // Getters
@@ -61,16 +99,16 @@ public class Question {
         return topic;
     }
 
-    public Difficulty getDifficulty() {
-        return difficulty;
+    public String getDifficulty() {
+        return difficulty.getLabel();
     }
 
-    public TimeToSolve getTimeToSolve() {
-        return timeToSolve;
+    public String getTimeToSolve() {
+        return timeToSolve.getLabel();
     }
 
-    public Paper getPaper() {
-        return paper;
+    public String getPaper() {
+        return paper.getLabel();
     }
 
     public ImageIcon getQuestionImage() {
@@ -127,6 +165,15 @@ public class Question {
     public void setMarks(int marks) {
         this.marks = marks;
     }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
 
     @Override
     public String toString() {
