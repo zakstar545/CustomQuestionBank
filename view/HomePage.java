@@ -1,3 +1,5 @@
+package view;
+
 //Import all of swing and awt
 import javax.swing.*;
 import java.awt.*;
@@ -106,4 +108,17 @@ public class HomePage extends JPanel{
     add(titlePanel);
     add(buttonsPanels);
   }
+
+  public JButton getButton1() {
+    return button1;
+  }
+
+  public JButton getButton2() {
+     return button2;
+  }
+
+  public JButton getButton3() {
+     return button3;
+  }
+  
 }

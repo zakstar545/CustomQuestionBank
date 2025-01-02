@@ -1,3 +1,5 @@
+package view;
+
 //Import all of swing and awt
 import javax.swing.*;
 import java.awt.*;
@@ -8,6 +10,8 @@ public class Frame extends JFrame{
 //Define CardLayout and the JPanel mainPanel
   private CardLayout cardLayout;
   private JPanel mainPanel;
+  private SolveQuestionsPage solveQuestionsPage;
+  private HomePage homePage;
 
   public Frame() {
     //Calling different methods to define the frames properties
@@ -26,12 +30,12 @@ public class Frame extends JFrame{
     //add them to the mainPanel
 
     //Home Page
-    JPanel homePage = new HomePage(cardLayout, mainPanel);
+    homePage = new HomePage(cardLayout, mainPanel);
     mainPanel.add(homePage, "Home");
 
     //Solve Questions Page (WILL BE ADDED LATER)
-    //JPanel solveQuestionsPage = new SolveQuestionsPage();
-    //mainPanel.add(solveQuestionsPage, "SolveQuestions");
+    solveQuestionsPage = new SolveQuestionsPage();
+    mainPanel.add(solveQuestionsPage, "SolveQuestions");
 
 
 
@@ -47,6 +51,18 @@ public class Frame extends JFrame{
     setVisible(true);
 
   }
+
+  public JPanel getMainPanel() {
+    return mainPanel;
+  }
+  public SolveQuestionsPage getSolveQuestionsPage() {
+    return solveQuestionsPage;
+}
+  public HomePage getHomePage() {
+    return homePage;
+}
+
+
 
   public static void main(String[] args) {
     new Frame();   //This just makes the GUI show up when you run the main method
