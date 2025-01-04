@@ -4,13 +4,9 @@ import model.entity.Question;
 import model.core.QuestionBank;
 
 import javax.swing.*;
-
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.util.LinkedList;
-import java.util.TimerTask;
-import java.util.Timer;
+
 
 public class SolveQuestionsPage extends JPanel {
     // Define instance variables
@@ -27,7 +23,9 @@ public class SolveQuestionsPage extends JPanel {
     private JPanel optionsContainer;
     private JPanel questionsContainer;
     private LinkedList<Question> questions;
-    private Timer resizeTimer;
+    private JPanel questionsPanel;
+
+
 
     // Constructor for SolveQuestionsPage
     public SolveQuestionsPage() {
@@ -46,8 +44,9 @@ public class SolveQuestionsPage extends JPanel {
         titlePanel = createTitlePanel();
         add(titlePanel, BorderLayout.NORTH);
         
+        questionsPanel = createQuestionsPanel();
         // Create the main split content
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, createQuestionSortingPanel(), createQuestionsPanel());
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, createQuestionSortingPanel(), questionsPanel);
         splitPane.setResizeWeight(0.25); // Give 25% space to the left panel
         mainContent.add(splitPane, BorderLayout.CENTER);    //Add the split pane which has the 2 primary panels to the main panel
         
@@ -205,55 +204,12 @@ public class SolveQuestionsPage extends JPanel {
         
         panel.add(scrollPane, BorderLayout.CENTER);
 
-        // Add a component listener to the panel to scale images
-        panel.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                if (resizeTimer != null) {
-                    resizeTimer.cancel();
-                }
-                resizeTimer = new Timer();
-                resizeTimer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        SwingUtilities.invokeLater(() -> {
-                            System.out.println("Window resized to: " + panel.getSize());
-                            scaleImages(panel.getWidth());
-                        });
-                    }
-                }, 500); // Delay in milliseconds
-            }
-        });
+        
 
         return panel;
     }
 
-    // This method scales the images in all question cards to match the panel width while maintaining aspect ratio
-    public void scaleImages(int panelWidth) {
-        // Keep track of actual question index
-        int questionIndex = 0;
-        for (int i = 0; i < getQuestionContainer().getComponentCount(); i++) {
-            Component component = getQuestionContainer().getComponent(i);
-            if (component instanceof JPanel) {
-                JPanel card = (JPanel) component;
-                for (Component cardComponent : card.getComponents()) {
-                    if (cardComponent instanceof JLabel) {
-                        JLabel content = (JLabel) cardComponent;
-                        // Get the original image from the current question
-                        ImageIcon originalImage = QuestionBank.getQuestions().get(questionIndex).getQuestionImage();
-                        if (originalImage != null) {
-                            Image tempImage = originalImage.getImage();
-                            if (panelWidth > 0) {
-                                Image tempScaledImage = tempImage.getScaledInstance(panelWidth - 100, -1, Image.SCALE_SMOOTH);
-                                content.setIcon(new ImageIcon(tempScaledImage));
-                            }
-                        }
-                    }
-                }
-                questionIndex++; // Increment only when we process a question card
-            }
-        }
-    }
+    
     
 
     // This method takes in a question object and returns the JPanel "card" for it
@@ -332,5 +288,9 @@ public class SolveQuestionsPage extends JPanel {
 
     public JPanel getQuestionCard(Question question) {
         return createQuestionCard(question);
+    }
+
+    public JPanel getQuestionsPanel() {
+        return questionsPanel;
     }
 }

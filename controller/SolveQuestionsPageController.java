@@ -2,80 +2,54 @@ package controller;
 
 import model.core.QuestionBank;
 import model.entity.Question;
-import view.page.Frame;
-import view.page.HomePage;
-import view.page.ModifyQuestionsPage;
-import view.page.PracticeTestPage;
 import view.page.SolveQuestionsPage;
+import view.page.Frame;  // Add this import
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.util.*;
+import java.util.Timer;
 
-public class GUIController {
-    public static Frame frame;
-    private HomePage homePage;
+
+public class SolveQuestionsPageController {
     private SolveQuestionsPage solveQuestionsPage;
-    private PracticeTestPage practiceTestPage;
-    private ModifyQuestionsPage modifyQuestionsPage;
+    private Timer resizeTimer;
+    private JPanel questionsPanel;
+    private JPanel questionContainer;
+    private Frame frame; // Add Frame instance variable
 
-    public GUIController(Frame frame) {
-        GUIController.frame = frame;
-        this.homePage = frame.getHomePage(); // Initialize homePage
-        this.solveQuestionsPage = frame.getSolveQuestionsPage();        
-        this.practiceTestPage = frame.getPracticeTestPage();
-        this.modifyQuestionsPage = frame.getModifyQuestionsPage();
-
-        // Populate subjectComboBox and topicComboBox initially
+    public SolveQuestionsPageController(Frame frame) {
+        this.frame = frame;
+        this.solveQuestionsPage = frame.getSolveQuestionsPage();
+        this.questionsPanel = solveQuestionsPage.getQuestionsPanel();
+        this.questionContainer = solveQuestionsPage.getQuestionContainer();
+        
+        // Initialize components
         updateSubjectComboBox();
         updateTopicComboBox();
-    
-        // Add action listeners to the buttons
         addActionListeners();
+
+        // Scale images initially
+        SwingUtilities.invokeLater(() -> {
+            scaleImages(questionsPanel.getWidth());
+            System.out.println("Initial scaling complete");
+        });
     }
-        
+
     private void addActionListeners() {
-        homePage.getSolveQuestionsButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                CardLayout cardLayout = (CardLayout) frame.getMainPanel().getLayout();
-                cardLayout.show(frame.getMainPanel(), "SolveQuestions");
-                System.out.println("Button 1 clicked");
-            }
-        });
 
-        homePage.getPracticeTestButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Navigate to Practice Test Page (to be implemented)
-            }
-        });
-
-        homePage.getModifyButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Navigate to Modify Questions Page (to be implemented)
-            }
-        });
-
-        solveQuestionsPage.getHomeButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                CardLayout cardLayout = (CardLayout) frame.getMainPanel().getLayout();
-                cardLayout.show(frame.getMainPanel(), "Home");
-            }
+        solveQuestionsPage.getHomeButton().addActionListener(e -> {
+            CardLayout cardLayout = (CardLayout) frame.getMainPanel().getLayout();
+            cardLayout.show(frame.getMainPanel(), "Home");
         });
 
         solveQuestionsPage.getSubjectBox().addActionListener(e -> {
-            updateTopicComboBox(); // Update topics based on selected subject
-            filterQuestions();
+            updateTopicComboBox(); // Let the topic box listener handle filtering
+            System.out.println("Topics updated");
         });
+        
 
         solveQuestionsPage.getTopicBox().addActionListener(e -> {
             filterQuestions();
@@ -101,6 +75,26 @@ public class GUIController {
                 filterQuestions();
             });
         }
+
+        
+        questionsPanel.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                if (resizeTimer != null) {
+                    resizeTimer.cancel();
+                }
+                resizeTimer = new Timer();
+                resizeTimer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        SwingUtilities.invokeLater(() -> {
+                            System.out.println("Window resized to: " + questionsPanel.getSize());
+                            scaleImages(questionsPanel.getWidth());
+                        });
+                    }
+                }, 1); // Delay in milliseconds
+            }
+        });
     }
 
     private void handleCheckboxSelection(JCheckBox[] checkBoxes, JCheckBox selectedCheckbox) {
@@ -230,57 +224,49 @@ public class GUIController {
     }
 
     public void updateQuestions(ArrayList<Question> filteredQuestions, JPanel questionsContainer) {
-        // Store current panel width
-        int currentWidth = questionsContainer.getWidth();
-        
         // Clear and rebuild the container
         questionsContainer.removeAll();
+        
+        // Create and add cards
         for (Question question : filteredQuestions) {
             JPanel card = solveQuestionsPage.getQuestionCard(question);
-            // Scale the image immediately when creating the card
-            JLabel imageLabel = findImageLabel(card);
-            if (imageLabel != null && currentWidth > 0) {
-                ImageIcon originalImage = question.getQuestionImage();
-                if (originalImage != null) {
-                    Image tempImage = originalImage.getImage();
-                    Image scaledImage = tempImage.getScaledInstance(currentWidth - 100, -1, Image.SCALE_SMOOTH);
-                    imageLabel.setIcon(new ImageIcon(scaledImage));
-                }
-            }
             questionsContainer.add(card);
-            questionsContainer.add(Box.createRigidArea(new Dimension(0, 10))); // Add spacing between cards
+            questionsContainer.add(Box.createRigidArea(new Dimension(0, 10))); 
         }
+        
+        // Scale all images after cards are created
+        scaleImages(questionsContainer.getWidth());
+        System.out.println("scaled from changed sorting options");
         
         // Refresh the container
         questionsContainer.revalidate();
         questionsContainer.repaint();
     }
 
-    // Helper method to find the image label in a card
-    private JLabel findImageLabel(JPanel card) {
-        for (Component comp : card.getComponents()) {
-            if (comp instanceof JLabel) {
-                JLabel label = (JLabel) comp;
-                if (label.getIcon() != null) {
-                    return label;
+    // This method scales the images in all question cards to match the panel width while maintaining aspect ratio
+    public void scaleImages(int panelWidth) {
+        // Keep track of actual question index
+        int questionIndex = 0;
+        for (int i = 0; i < questionContainer.getComponentCount(); i++) {
+            Component component = questionContainer.getComponent(i);
+            if (component instanceof JPanel) {
+                JPanel card = (JPanel) component;
+                for (Component cardComponent : card.getComponents()) {
+                    if (cardComponent instanceof JLabel) {
+                        JLabel content = (JLabel) cardComponent;
+                        // Get the original image from the current question
+                        ImageIcon originalImage = QuestionBank.getQuestions().get(questionIndex).getQuestionImage();
+                        if (originalImage != null) {
+                            Image tempImage = originalImage.getImage();
+                            if (panelWidth > 0) {
+                                Image tempScaledImage = tempImage.getScaledInstance(panelWidth - 100, -1, Image.SCALE_SMOOTH);
+                                content.setIcon(new ImageIcon(tempScaledImage));
+                            }
+                        }
+                    }
                 }
+                questionIndex++; // Increment only when we process a question card
             }
         }
-        return null;
-    }
-
-    
-    
-    public static void main(String[] args) {
-        // Set the look and feel to the system's default look and feel
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // Create the frame and controller
-        Frame frame = new Frame();
-        GUIController controller = new GUIController(frame); // Create controller instance
     }
 }
