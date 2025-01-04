@@ -22,8 +22,8 @@ public class Question {
     public enum TimeToSolve {
         ZERO_TO_ONE("0-1"), 
         ONE_TO_FIVE("1-5"), 
-        FIVE_TO_FIFTEEN("5-15"), 
-        FIFTEEN_TO_THIRTYFIVE("15-35"), 
+        FIVE_TO_TEN("5-10"), 
+        TEN_TO_THIRTYFIVE("10-35"), 
         THIRTYFIVE_TO_SIXTY("35-60");
 
         private final String label;
@@ -70,8 +70,8 @@ public class Question {
         if (!globalSubjectTopicManager.isValidSubject(subject)) {
             globalSubjectTopicManager.addSubject(subject);
         }
-        if (!globalSubjectTopicManager.isValidTopic(topic)) {
-            globalSubjectTopicManager.addTopic(topic);
+        if (!globalSubjectTopicManager.isValidTopic(subject, topic)) {
+            globalSubjectTopicManager.addTopic(subject, topic);
         }
 
         this.id = id;
@@ -136,8 +136,8 @@ public class Question {
     }
 
     public void setTopic(String topic) {
-        if (!globalSubjectTopicManager.isValidTopic(topic)) {
-            globalSubjectTopicManager.addTopic(topic);
+        if (!globalSubjectTopicManager.isValidTopic(subject, topic)) {
+            globalSubjectTopicManager.addTopic(subject, topic);
         }
         this.topic = topic;
     }
@@ -173,7 +173,6 @@ public class Question {
     public void setTitle(String title) {
         this.title = title;
     }
-
 
     @Override
     public String toString() {

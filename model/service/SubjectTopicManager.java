@@ -1,46 +1,53 @@
 package model.service;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class SubjectTopicManager {
-    private Set<String> subjects;
-    private Set<String> topics;
+    private Map<String, Set<String>> subjectTopics;
 
     public SubjectTopicManager() {
-        subjects = new HashSet<>();
-        topics = new HashSet<>();
+        subjectTopics = new HashMap<>();
     }
 
     public void addSubject(String subject) {
-        subjects.add(subject);
+        subjectTopics.putIfAbsent(subject, new HashSet<>());
     }
 
-    public void addTopic(String topic) {
-        topics.add(topic);
+    public void addTopic(String subject, String topic) {
+        Set<String> topics = subjectTopics.get(subject);
+        if (topics != null) {
+            topics.add(topic);
+        }
     }
 
     public void removeSubject(String subject) {
-        subjects.remove(subject);
+        subjectTopics.remove(subject);
     }
 
-    public void removeTopic(String topic) {
-        topics.remove(topic);
+    public void removeTopic(String subject, String topic) {
+        Set<String> topics = subjectTopics.get(subject);
+        if (topics != null) {
+            topics.remove(topic);
+        }
     }
 
     public Set<String> getSubjects() {
-        return subjects;
+        return subjectTopics.keySet();
     }
 
-    public Set<String> getTopics() {
-        return topics;
+    public Set<String> getTopics(String subject) {
+        return subjectTopics.getOrDefault(subject, new HashSet<>());
     }
 
     public boolean isValidSubject(String subject) {
-        return subjects.contains(subject);
+        return subjectTopics.containsKey(subject);
     }
 
-    public boolean isValidTopic(String topic) {
-        return topics.contains(topic);
+    public boolean isValidTopic(String subject, String topic) {
+        Set<String> topics = subjectTopics.get(subject);
+        return topics != null && topics.contains(topic);
     }
 }

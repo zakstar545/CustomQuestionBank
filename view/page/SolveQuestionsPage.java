@@ -1,15 +1,14 @@
-package view;
+package view.page;
 
 import model.entity.Question;
 import model.core.QuestionBank;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Set;
 import java.util.TimerTask;
 import java.util.Timer;
 
@@ -21,9 +20,14 @@ public class SolveQuestionsPage extends JPanel {
     private JCheckBox[] difficultyBoxes;
     private JCheckBox[] timeBoxes;
     private JButton homeButton;
+    private JPanel mainContent;
+    private JPanel titlePanel;
+    private JSplitPane splitPane;
+    private JPanel topBar;
+    private JPanel optionsContainer;
     private JPanel questionsContainer;
+    private LinkedList<Question> questions;
     private Timer resizeTimer;
-    private ArrayList<ImageIcon> originalImages; // Store original images
 
     // Constructor for SolveQuestionsPage
     public SolveQuestionsPage() {
@@ -34,24 +38,23 @@ public class SolveQuestionsPage extends JPanel {
         QuestionBank.loadSampleQuestions();
         
         // Main content panel with padding
-        JPanel mainContent = new JPanel(new BorderLayout(10, 10));
+        mainContent = new JPanel(new BorderLayout(10, 10));
         mainContent.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         mainContent.setBackground(new Color(245, 245, 245)); // Set background color
         
         // Add the title panel
-        JPanel titlePanel = createTitlePanel();
+        titlePanel = createTitlePanel();
         add(titlePanel, BorderLayout.NORTH);
         
         // Create the main split content
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                createScrollableQuestionSortingPanel(),
-                createQuestionsPanel());
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, createQuestionSortingPanel(), createQuestionsPanel());
         splitPane.setResizeWeight(0.25); // Give 25% space to the left panel
         mainContent.add(splitPane, BorderLayout.CENTER);    //Add the split pane which has the 2 primary panels to the main panel
         
         // Add navigation buttons
-        JPanel topBar = new JPanel(new BorderLayout());
+        topBar = new JPanel(new BorderLayout());
         topBar.setBackground(new Color(245, 245, 245)); // Set background color
+        
         homeButton = new JButton("Go Home");
         homeButton.setFont(new Font("Arial", Font.PLAIN, 14));
         homeButton.setBackground(new Color(220, 220, 220)); // Set button background color
@@ -64,6 +67,8 @@ public class SolveQuestionsPage extends JPanel {
         add(mainContent, BorderLayout.CENTER);   //Add the main content panel to the SolveQuestionPage panel
     }
 
+    //GUI Builder/create methods: One for title panel, one for the scrollable question sorting pane 
+    // , one quseion sorting panel, one for the questions panel,
     // This method creates returns a title panel with the title`
     private JPanel createTitlePanel() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -76,51 +81,54 @@ public class SolveQuestionsPage extends JPanel {
     }
     
 
-    // This method creates the the scroll pane for the question sorting oanel
-    private JScrollPane createScrollableQuestionSortingPanel() {
-        JPanel panel = createQuestionSortingPanel();
-        JScrollPane scrollPane = new JScrollPane(panel);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED); // Enable horizontal scroll bar if needed
-        return scrollPane;
-    }
 
     // This method creates the panel that will contain the question sorting options using gridbag layout
     //It adds each element group in its own seperate roww
     private JPanel createQuestionSortingPanel() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(BorderFactory.createCompoundBorder(
+        // Create a panel with GridBagLayout to hold the JScrollPane
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        panel.setBackground(new Color(245, 245, 245)); // Set background color
+
+        optionsContainer = new JPanel(new GridBagLayout());
+        optionsContainer.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder("Question Sorting"),
             BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
-        panel.setBackground(new Color(245, 245, 245)); // Set background color
+        optionsContainer.setBackground(new Color(245, 245, 245)); // Set background color
         
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(5, 5, 5, 5);
+        // Create a JScrollPane and add it to the panel
+        JScrollPane scrollPane = new JScrollPane(optionsContainer);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);  
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        GridBagConstraints containerGbc = new GridBagConstraints();
+        containerGbc.fill = GridBagConstraints.HORIZONTAL;
+        containerGbc.insets = new Insets(5, 5, 5, 5);
         
         // Subject
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panel.add(new JLabel("Subject"), gbc);
+        containerGbc.gridx = 0;
+        containerGbc.gridy = 0;
+        optionsContainer.add(new JLabel("Subject"), containerGbc);
         
-        gbc.gridy = 1;
+        containerGbc.gridy = 1;
         subjectBox = new JComboBox<>();
-        panel.add(subjectBox, gbc);
+        optionsContainer.add(subjectBox, containerGbc);
         
         // Topic
-        gbc.gridy = 2;
-        panel.add(new JLabel("Topic"), gbc);
+        containerGbc.gridy = 2;
+        optionsContainer.add(new JLabel("Topic"), containerGbc);
         
-        gbc.gridy = 3;
+        containerGbc.gridy = 3;
         topicBox = new JComboBox<>();
-        panel.add(topicBox, gbc);
+        optionsContainer.add(topicBox, containerGbc);
         
         // Paper options
-        gbc.gridy = 4;
-        panel.add(new JLabel("Paper"), gbc);
+        containerGbc.gridy = 4;
+        optionsContainer.add(new JLabel("Paper"), containerGbc);
         
-        gbc.gridy = 5;
+        containerGbc.gridy = 5;
         JPanel paperPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         paperPanel.setBackground(new Color(245, 245, 245)); // Set background color
         paperBoxes = new JCheckBox[3];
@@ -129,30 +137,14 @@ public class SolveQuestionsPage extends JPanel {
             paperBoxes[i] = new JCheckBox(papers[i]);
             paperBoxes[i].setBackground(new Color(245, 245, 245)); // Set background color
             paperPanel.add(paperBoxes[i]);
-            
-            // Add ActionListener to allow deselection and track active checkbox
-            paperBoxes[i].addActionListener(e -> {
-                JCheckBox source = (JCheckBox) e.getSource();
-                if (source.isSelected()) {
-                    for (JCheckBox button : paperBoxes) {
-                        if (button != source) {
-                            button.setSelected(false);
-                        }
-                    }
-                    System.out.println("Active Paper: " + source.getText());
-                } else {
-                    source.setSelected(false);
-                    System.out.println("No active Paper");
-                }
-            });
         }
-        panel.add(paperPanel, gbc);
+        optionsContainer.add(paperPanel, containerGbc);
         
         // Difficulty options
-        gbc.gridy = 6;
-        panel.add(new JLabel("Difficulty"), gbc);
+        containerGbc.gridy = 6;
+        optionsContainer.add(new JLabel("Difficulty"), containerGbc);
         
-        gbc.gridy = 7;
+        containerGbc.gridy = 7;
         JPanel difficultyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         difficultyPanel.setBackground(new Color(245, 245, 245)); // Set background color
         difficultyBoxes = new JCheckBox[3];
@@ -161,30 +153,14 @@ public class SolveQuestionsPage extends JPanel {
             difficultyBoxes[i] = new JCheckBox(difficulties[i]);
             difficultyBoxes[i].setBackground(new Color(245, 245, 245)); // Set background color
             difficultyPanel.add(difficultyBoxes[i]);
-            
-            // Add ActionListener to allow deselection and track active checkbox
-            difficultyBoxes[i].addActionListener(e -> {
-                JCheckBox source = (JCheckBox) e.getSource();
-                if (source.isSelected()) {
-                    for (JCheckBox button : difficultyBoxes) {
-                        if (button != source) {
-                            button.setSelected(false);
-                        }
-                    }
-                    System.out.println("Active Difficulty: " + source.getText());
-                } else {
-                    source.setSelected(false);
-                    System.out.println("No active Difficulty");
-                }
-            });
         }
-        panel.add(difficultyPanel, gbc);
+        optionsContainer.add(difficultyPanel, containerGbc);
         
         // Time to Solve options
-        gbc.gridy = 8;
-        panel.add(new JLabel("Time To Solve (Minutes)"), gbc);
+        containerGbc.gridy = 8;
+        optionsContainer.add(new JLabel("Time To Solve (Minutes)"), containerGbc);
         
-        gbc.gridy = 9;
+        containerGbc.gridy = 9;
         JPanel timePanel = new JPanel(new GridLayout(0, 2));
         timePanel.setBackground(new Color(245, 245, 245)); // Set background color
         timeBoxes = new JCheckBox[5];
@@ -193,30 +169,14 @@ public class SolveQuestionsPage extends JPanel {
             timeBoxes[i] = new JCheckBox(times[i]);
             timeBoxes[i].setBackground(new Color(245, 245, 245)); // Set background color
             timePanel.add(timeBoxes[i]);
-            
-            // Add ActionListener to allow deselection and track active checkbox
-            timeBoxes[i].addActionListener(e -> {
-                JCheckBox source = (JCheckBox) e.getSource();
-                if (source.isSelected()) {
-                    for (JCheckBox button : timeBoxes) {
-                        if (button != source) {
-                            button.setSelected(false);
-                        }
-                    }
-                    System.out.println("Active Time to Solve: " + source.getText());
-                } else {
-                    source.setSelected(false);
-                    System.out.println("No active Time to Solve");
-                }
-            });
         }
-        panel.add(timePanel, gbc);
+        optionsContainer.add(timePanel, containerGbc);
         
         // Add filler to push everything to the top
-        gbc.gridy = 10;
-        gbc.weighty = 1.0;
-        panel.add(Box.createVerticalGlue(), gbc);
-        
+        containerGbc.gridy = 10;
+        containerGbc.weighty = 1.0;
+        optionsContainer.add(Box.createVerticalGlue(), containerGbc);
+
         return panel;
     }
 
@@ -232,7 +192,7 @@ public class SolveQuestionsPage extends JPanel {
         questionsContainer.setBackground(new Color(245, 245, 245)); // Set background color
         
         // Create and add question cards
-        LinkedList<Question> questions = QuestionBank.getQuestions();
+        questions = QuestionBank.getQuestions();
         for (Question question : questions) {
             questionsContainer.add(createQuestionCard(question));
             questionsContainer.add(Box.createRigidArea(new Dimension(0, 10))); // Add spacing between cards
@@ -261,7 +221,7 @@ public class SolveQuestionsPage extends JPanel {
                             scaleImages(panel.getWidth());
                         });
                     }
-                }, 200); // Delay in milliseconds
+                }, 500); // Delay in milliseconds
             }
         });
 
@@ -269,11 +229,11 @@ public class SolveQuestionsPage extends JPanel {
     }
 
     // This method scales the images in all question cards to match the panel width while maintaining aspect ratio
-    private void scaleImages(int panelWidth) {
+    public void scaleImages(int panelWidth) {
         // Keep track of actual question index
         int questionIndex = 0;
-        for (int i = 0; i < questionsContainer.getComponentCount(); i++) {
-            Component component = questionsContainer.getComponent(i);
+        for (int i = 0; i < getQuestionContainer().getComponentCount(); i++) {
+            Component component = getQuestionContainer().getComponent(i);
             if (component instanceof JPanel) {
                 JPanel card = (JPanel) component;
                 for (Component cardComponent : card.getComponents()) {
@@ -294,6 +254,7 @@ public class SolveQuestionsPage extends JPanel {
             }
         }
     }
+    
 
     // This method takes in a question object and returns the JPanel "card" for it
     private JPanel createQuestionCard(Question question) {
@@ -332,30 +293,14 @@ public class SolveQuestionsPage extends JPanel {
         
         card.add(header, BorderLayout.NORTH);
     
-        // Question content (WILL BE THE SCREENSHOT LATER ON)
+        // Question content
         ImageIcon image = question.getQuestionImage();    // Get the image 
         JLabel content = new JLabel(image);   //
-        content.setHorizontalAlignment(JLabel.CENTER);
         card.add(content, BorderLayout.CENTER);
         
         return card;
     }
     
-    public void setSubjects(Set<String> subjects) {
-        subjectBox.removeAllItems();
-        subjectBox.addItem("N/A");
-        for (String subject : subjects) {
-            subjectBox.addItem(subject);
-        }
-    }
-
-    public void setTopics(Set<String> topics) {
-        topicBox.removeAllItems();
-        topicBox.addItem("N/A");
-        for (String topic : topics) {
-            topicBox.addItem(topic);
-        }
-    }
     
     public JComboBox<String> getSubjectBox() {
         return subjectBox;
@@ -381,43 +326,11 @@ public class SolveQuestionsPage extends JPanel {
         return homeButton;
     }
 
-    public void updateQuestions(ArrayList<Question> filteredQuestions) {
-        // Store current panel width
-        int currentWidth = questionsContainer.getWidth();
-        
-        // Clear and rebuild the container
-        questionsContainer.removeAll();
-        for (Question question : filteredQuestions) {
-            JPanel card = createQuestionCard(question);
-            // Scale the image immediately when creating the card
-            JLabel imageLabel = findImageLabel(card);
-            if (imageLabel != null && currentWidth > 0) {
-                ImageIcon originalImage = question.getQuestionImage();
-                if (originalImage != null) {
-                    Image tempImage = originalImage.getImage();
-                    Image scaledImage = tempImage.getScaledInstance(currentWidth - 100, -1, Image.SCALE_SMOOTH);
-                    imageLabel.setIcon(new ImageIcon(scaledImage));
-                }
-            }
-            questionsContainer.add(card);
-            questionsContainer.add(Box.createRigidArea(new Dimension(0, 10))); // Add spacing between cards
-        }
-        
-        // Refresh the container
-        questionsContainer.revalidate();
-        questionsContainer.repaint();
+    public JPanel getQuestionContainer() {
+        return questionsContainer;
     }
-    
-    // Helper method to find the image label in a card
-    private JLabel findImageLabel(JPanel card) {
-        for (Component comp : card.getComponents()) {
-            if (comp instanceof JLabel) {
-                JLabel label = (JLabel) comp;
-                if (label.getIcon() != null) {
-                    return label;
-                }
-            }
-        }
-        return null;
+
+    public JPanel getQuestionCard(Question question) {
+        return createQuestionCard(question);
     }
 }
