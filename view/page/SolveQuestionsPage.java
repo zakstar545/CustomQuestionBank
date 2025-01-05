@@ -1,6 +1,11 @@
 package view.page;
 
 import model.entity.Question;
+import view.component.Common;
+import view.component.CustomButton;
+import view.component.CustomCheckBox;
+import view.component.CustomLabel;
+import view.component.CustomPanel;
 import model.core.QuestionBank;
 
 import javax.swing.*;
@@ -8,14 +13,14 @@ import java.awt.*;
 import java.util.LinkedList;
 
 
-public class SolveQuestionsPage extends JPanel {
+public class SolveQuestionsPage extends CustomPanel {
     // Define instance variables
     private JComboBox<String> subjectBox;
     private JComboBox<String> topicBox;
-    private JCheckBox[] paperBoxes;
-    private JCheckBox[] difficultyBoxes;
-    private JCheckBox[] timeBoxes;
-    private JButton homeButton;
+    private CustomCheckBox[] paperBoxes;
+    private CustomCheckBox[] difficultyBoxes;
+    private CustomCheckBox[] timeBoxes;
+    private CustomButton homeButton;
     private JPanel mainContent;
     private JPanel titlePanel;
     private JSplitPane splitPane;
@@ -25,20 +30,21 @@ public class SolveQuestionsPage extends JPanel {
     private LinkedList<Question> questions;
     private JPanel questionsPanel;
 
+    Font defaultFont = UIManager.getFont("CheckBox.font");
+    // Get the default font size
+    int defaultFontSize = defaultFont.getSize();
 
 
     // Constructor for SolveQuestionsPage
     public SolveQuestionsPage() {
         setLayout(new BorderLayout(10, 10)); // Set the layout of the panel
-        setBackground(new Color(245, 245, 245)); // Set background color
         
         // Load sample questions into QuestionBank
         QuestionBank.loadSampleQuestions();
         
         // Main content panel with padding
-        mainContent = new JPanel(new BorderLayout(10, 10));
-        mainContent.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        mainContent.setBackground(new Color(245, 245, 245)); // Set background color
+        mainContent = new CustomPanel(new BorderLayout(10, 10));
+  
         
         // Add the title panel
         titlePanel = createTitlePanel();
@@ -51,10 +57,11 @@ public class SolveQuestionsPage extends JPanel {
         mainContent.add(splitPane, BorderLayout.CENTER);    //Add the split pane which has the 2 primary panels to the main panel
         
         // Add navigation buttons
-        topBar = new JPanel(new BorderLayout());
+        topBar = new CustomPanel(new BorderLayout());
         topBar.setBackground(new Color(245, 245, 245)); // Set background color
-        
-        homeButton = new JButton("Go Home");
+        topBar.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+
+        homeButton = new CustomButton("Go Home");
         homeButton.setFont(new Font("Arial", Font.PLAIN, 14));
         homeButton.setBackground(new Color(220, 220, 220)); // Set button background color
         homeButton.setFocusPainted(false);
@@ -69,11 +76,14 @@ public class SolveQuestionsPage extends JPanel {
     //GUI Builder/create methods: One for title panel, one for the scrollable question sorting pane 
     // , one quseion sorting panel, one for the questions panel,
     // This method creates returns a title panel with the title`
-    private JPanel createTitlePanel() {
-        JPanel panel = new JPanel(new BorderLayout());
+    private CustomPanel createTitlePanel() {
+        CustomPanel panel = new CustomPanel(new BorderLayout());
         panel.setBackground(new Color(245, 245, 245)); // Set background color
-        JLabel title = new JLabel("Custom Question Bank", SwingConstants.CENTER);
-        title.setFont(new Font("Arial", Font.BOLD, 24));
+
+        CustomLabel title = new CustomLabel("Solve Questions");
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        title.setFont(new Font(Common.getDefaultFont(), Font.BOLD, 24)); // Set font for the label text
+
         panel.add(title, BorderLayout.CENTER);
         panel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         return panel;
@@ -83,18 +93,16 @@ public class SolveQuestionsPage extends JPanel {
 
     // This method creates the panel that will contain the question sorting options using gridbag layout
     //It adds each element group in its own seperate roww
-    private JPanel createQuestionSortingPanel() {
+    private CustomPanel createQuestionSortingPanel() {
         // Create a panel with GridBagLayout to hold the JScrollPane
-        JPanel panel = new JPanel(new BorderLayout());
+        CustomPanel panel = new CustomPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        panel.setBackground(new Color(245, 245, 245)); // Set background color
 
-        optionsContainer = new JPanel(new GridBagLayout());
+        optionsContainer = new CustomPanel(new GridBagLayout());
         optionsContainer.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder("Question Sorting"),
             BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
-        optionsContainer.setBackground(new Color(245, 245, 245)); // Set background color
         
         // Create a JScrollPane and add it to the panel
         JScrollPane scrollPane = new JScrollPane(optionsContainer);
@@ -109,31 +117,47 @@ public class SolveQuestionsPage extends JPanel {
         // Subject
         containerGbc.gridx = 0;
         containerGbc.gridy = 0;
-        optionsContainer.add(new JLabel("Subject"), containerGbc);
-        
+
+        CustomLabel subjectLabel = new CustomLabel("Subject");
+
+        subjectLabel.setFont(defaultFont.deriveFont(Font.BOLD));
+
+        optionsContainer.add(subjectLabel, containerGbc);
+
         containerGbc.gridy = 1;
         subjectBox = new JComboBox<>();
+        subjectBox.setFont(new Font(Common.getDefaultFont(), Font.PLAIN, defaultFontSize)); // Set custom font for the checkbox text which we can then call getFont() to put on other elements
+
         optionsContainer.add(subjectBox, containerGbc);
         
         // Topic
         containerGbc.gridy = 2;
-        optionsContainer.add(new JLabel("Topic"), containerGbc);
+
+        CustomLabel topicLabel = new CustomLabel("Topic");
+        topicLabel.setFont(subjectLabel.getFont());
+
+        optionsContainer.add(topicLabel, containerGbc);
         
         containerGbc.gridy = 3;
         topicBox = new JComboBox<>();
+        topicBox.setFont(subjectBox.getFont()); // Set custom font for the checkbox text
         optionsContainer.add(topicBox, containerGbc);
         
         // Paper options
         containerGbc.gridy = 4;
-        optionsContainer.add(new JLabel("Paper"), containerGbc);
+
+        CustomLabel paperLabel = new CustomLabel("Paper");
+        paperLabel.setFont(subjectLabel.getFont());
+
+        optionsContainer.add(paperLabel, containerGbc);
         
         containerGbc.gridy = 5;
-        JPanel paperPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        paperPanel.setBackground(new Color(245, 245, 245)); // Set background color
-        paperBoxes = new JCheckBox[3];
+        CustomPanel paperPanel = new CustomPanel(new FlowLayout(FlowLayout.LEFT));
+        paperPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        paperBoxes = new CustomCheckBox[3];
         String[] papers = {"1", "2", "3"};
         for (int i = 0; i < 3; i++) {
-            paperBoxes[i] = new JCheckBox(papers[i]);
+            paperBoxes[i] = new CustomCheckBox(papers[i]);
             paperBoxes[i].setBackground(new Color(245, 245, 245)); // Set background color
             paperPanel.add(paperBoxes[i]);
         }
@@ -141,31 +165,42 @@ public class SolveQuestionsPage extends JPanel {
         
         // Difficulty options
         containerGbc.gridy = 6;
-        optionsContainer.add(new JLabel("Difficulty"), containerGbc);
+
+        CustomLabel difficultyLabel = new CustomLabel("Difficulty");
+        difficultyLabel.setFont(subjectLabel.getFont());
+
+        optionsContainer.add(difficultyLabel, containerGbc);
         
         containerGbc.gridy = 7;
-        JPanel difficultyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        difficultyPanel.setBackground(new Color(245, 245, 245)); // Set background color
-        difficultyBoxes = new JCheckBox[3];
+        CustomPanel difficultyPanel = new CustomPanel(new FlowLayout(FlowLayout.LEFT));
+        difficultyPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+
+        difficultyBoxes = new CustomCheckBox[3];
         String[] difficulties = {"Easy", "Medium", "Hard"};
         for (int i = 0; i < 3; i++) {
-            difficultyBoxes[i] = new JCheckBox(difficulties[i]);
+            difficultyBoxes[i] = new CustomCheckBox(difficulties[i]);
             difficultyBoxes[i].setBackground(new Color(245, 245, 245)); // Set background color
             difficultyPanel.add(difficultyBoxes[i]);
         }
+
         optionsContainer.add(difficultyPanel, containerGbc);
         
         // Time to Solve options
         containerGbc.gridy = 8;
-        optionsContainer.add(new JLabel("Time To Solve (Minutes)"), containerGbc);
+
+        CustomLabel timeToSolveLabel = new CustomLabel("Time to Solve (minutes)");
+        timeToSolveLabel.setFont(subjectLabel.getFont());
+
+        optionsContainer.add(timeToSolveLabel, containerGbc);
         
         containerGbc.gridy = 9;
-        JPanel timePanel = new JPanel(new GridLayout(0, 2));
-        timePanel.setBackground(new Color(245, 245, 245)); // Set background color
-        timeBoxes = new JCheckBox[5];
+        CustomPanel timePanel = new CustomPanel(new GridLayout(0, 2));
+        timePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+
+        timeBoxes = new CustomCheckBox[5];
         String[] times = {"0-1", "1-5", "5-10", "10-35", "35-60"};
         for (int i = 0; i < 5; i++) {
-            timeBoxes[i] = new JCheckBox(times[i]);
+            timeBoxes[i] = new CustomCheckBox(times[i]);
             timeBoxes[i].setBackground(new Color(245, 245, 245)); // Set background color
             timePanel.add(timeBoxes[i]);
         }
@@ -181,17 +216,16 @@ public class SolveQuestionsPage extends JPanel {
 
     
     // This method creates the panel that will contain the questions
-    private JPanel createQuestionsPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
+    private CustomPanel createQuestionsPanel() {
+        CustomPanel panel = new CustomPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        panel.setBackground(new Color(245, 245, 245)); // Set background color
         
-        questionsContainer = new JPanel();
+        questionsContainer = new CustomPanel();
         questionsContainer.setLayout(new BoxLayout(questionsContainer, BoxLayout.Y_AXIS));
-        questionsContainer.setBackground(new Color(245, 245, 245)); // Set background color
-        
+        questionsContainer.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+
         // Create and add question cards
-        questions = QuestionBank.getQuestions();
+        questions = QuestionBank.questions;
         for (Question question : questions) {
             questionsContainer.add(createQuestionCard(question));
             questionsContainer.add(Box.createRigidArea(new Dimension(0, 10))); // Add spacing between cards
@@ -213,8 +247,8 @@ public class SolveQuestionsPage extends JPanel {
     
 
     // This method takes in a question object and returns the JPanel "card" for it
-    private JPanel createQuestionCard(Question question) {
-        JPanel card = new JPanel(new BorderLayout());
+    private CustomPanel createQuestionCard(Question question) {
+        CustomPanel card = new CustomPanel(new BorderLayout());
         card.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(Color.LIGHT_GRAY),
             BorderFactory.createEmptyBorder(10, 10, 10, 10)
@@ -222,29 +256,39 @@ public class SolveQuestionsPage extends JPanel {
         card.setBackground(new Color(255, 255, 255)); // Set background color
         
         // Question header
-        JPanel header = new JPanel(new BorderLayout());
+        CustomPanel header = new CustomPanel(new BorderLayout());
         header.setBackground(new Color(255, 255, 255)); // Set background color
-        JLabel titleLabel = new JLabel(question.getTitle());
+        header.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+
+        CustomLabel titleLabel = new CustomLabel(question.getTitle());
         titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
         header.add(titleLabel, BorderLayout.NORTH);
         
         // Topics and subtopics
-        JPanel topicsPanel = new JPanel(new GridLayout(4, 1));
+        CustomPanel topicsPanel = new CustomPanel(new GridLayout(6, 1));
         topicsPanel.setBackground(new Color(255, 255, 255)); // Set background color
-        topicsPanel.add(new JLabel("Topic: " + question.getTopic()));
-        topicsPanel.add(new JLabel("IB Subject: " + question.getSubject()));
-        topicsPanel.add(new JLabel("IB Paper: " + question.getPaper()));
-        topicsPanel.add(new JLabel("Time to Solve: " + question.getTimeToSolve() + " minutes"));
+        header.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        topicsPanel.add(new CustomLabel("IB Subject: " + question.getSubject()));
+        topicsPanel.add(new CustomLabel("Topic: " + question.getTopic()));
+        topicsPanel.add(new CustomLabel("IB Paper: " + question.getPaper()));
+        topicsPanel.add(new CustomLabel("Difficulty: " + question.getDifficulty()));
+        topicsPanel.add(new CustomLabel("Time to Solve: " + question.getTimeToSolve() + " minutes"));
+        topicsPanel.add(new CustomLabel("Marks: " + question.getMarks() + " marks"));
+
 
         header.add(topicsPanel, BorderLayout.CENTER);
         
         // Action buttons
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        CustomPanel buttonsPanel = new CustomPanel(new FlowLayout(FlowLayout.LEFT));
         buttonsPanel.setBackground(new Color(255, 255, 255)); // Set background color
-        JButton addToPracticeTest = new JButton("Add to Practice Test");
-        JButton markschemeButton = new JButton("Markscheme");
+        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+
+        CustomButton addToPracticeTest = new CustomButton("Add to Practice Test");
+        CustomButton markschemeButton = new CustomButton("Show Markscheme");
+
         buttonsPanel.add(addToPracticeTest);
         buttonsPanel.add(markschemeButton);
+
         header.add(buttonsPanel, BorderLayout.SOUTH);
         
         card.add(header, BorderLayout.NORTH);
@@ -266,19 +310,19 @@ public class SolveQuestionsPage extends JPanel {
         return topicBox;
     }
 
-    public JCheckBox[] getPaperBoxes() {
+    public CustomCheckBox[] getPaperBoxes() {
         return paperBoxes;
     }
 
-    public JCheckBox[] getDifficultyBoxes() {
+    public CustomCheckBox[] getDifficultyBoxes() {
         return difficultyBoxes;
     }
 
-    public JCheckBox[] getTimeBoxes() {
+    public CustomCheckBox[] getTimeBoxes() {
         return timeBoxes;
     }
 
-    public JButton getHomeButton() {
+    public CustomButton getHomeButton() {
         return homeButton;
     }
 

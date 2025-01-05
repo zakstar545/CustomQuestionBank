@@ -53,30 +53,40 @@ public class Question {
         }        
     }
 
-    private int id;    //unique code for identifying the question
-    private String subject; // which IB subject
-    private String topic;    // which topic from that subject
-    private Difficulty difficulty;   //easy, medium, hard
-    private TimeToSolve timeToSolve;    //time choices in minutes
-    private Paper paper;     //IB paper 1,2,3
-    private ImageIcon questionImage;    //Image associated with the question
-    private ImageIcon markschemeImage; //Image associated with the markscheme
-    private int marks;    //marks for the question
+    private static int idCounter = 0; // Static counter for unique IDs
+
+    private int id;    // Unique code for identifying the question
+    private String subject; // Which IB subject
+    private String topic;    // Which topic from that subject
+    private Difficulty difficulty;   // Easy, medium, hard
+    private TimeToSolve timeToSolve;    // Time choices in minutes
+    private Paper paper;     // IB paper 1,2,3
+    private ImageIcon questionImage;    // Image associated with the question
+    private ImageIcon markschemeImage; // Image associated with the markscheme
+    private int marks;    // Marks for the question
     private String title;
 
     public static SubjectTopicManager globalSubjectTopicManager = new SubjectTopicManager();
 
-    public Question(int id, String subject, String topic, Difficulty difficulty, TimeToSolve timeToSolve, Paper paper, ImageIcon questionImage, ImageIcon markschemeImage, int marks, String title) {
-        if (!globalSubjectTopicManager.isValidSubject(subject)) {
-            globalSubjectTopicManager.addSubject(subject);
-        }
-        if (!globalSubjectTopicManager.isValidTopic(subject, topic)) {
-            globalSubjectTopicManager.addTopic(subject, topic);
-        }
+    // Constructor for creating a new question with a unique ID
+    public Question(String subject, String topic, Difficulty difficulty, TimeToSolve timeToSolve, Paper paper, ImageIcon questionImage, ImageIcon markschemeImage, int marks, String title) {
+        this.id = ++idCounter; // Assign a unique ID
+        setSubject(subject);
+        setTopic(topic);
+        this.difficulty = difficulty;
+        this.timeToSolve = timeToSolve;
+        this.paper = paper;
+        this.questionImage = questionImage;
+        this.markschemeImage = markschemeImage;
+        this.marks = marks;
+        this.title = title;
+    }
 
+    // Constructor for loading a question with a specific ID (e.g., from a file)
+    public Question(int id, String subject, String topic, Difficulty difficulty, TimeToSolve timeToSolve, Paper paper, ImageIcon questionImage, ImageIcon markschemeImage, int marks, String title) {
         this.id = id;
-        this.subject = subject;
-        this.topic = topic;
+        setSubject(subject);
+        setTopic(topic);
         this.difficulty = difficulty;
         this.timeToSolve = timeToSolve;
         this.paper = paper;
@@ -123,6 +133,10 @@ public class Question {
         return marks;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
     // Setters
     public void setId(int id) {
         this.id = id;
@@ -166,10 +180,6 @@ public class Question {
         this.marks = marks;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
     public void setTitle(String title) {
         this.title = title;
     }
@@ -186,6 +196,7 @@ public class Question {
                 ", questionImage=" + (questionImage != null ? questionImage.getDescription() : "No Image") +
                 ", markschemeImage=" + (markschemeImage != null ? markschemeImage.getDescription() : "No Markscheme Image") +
                 ", marks=" + marks +
+                ", title='" + title + '\'' +
                 '}';
     }
 }

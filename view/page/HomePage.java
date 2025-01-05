@@ -47,8 +47,13 @@ public class HomePage extends CustomPanel {
         panel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0)); // Set default border
 
         solveQuestionsButton = new CustomButton("Solve Questions");
+        solveQuestionsButton.setFont(new Font(Common.getDefaultFont(), Font.BOLD, 20)); // 
+
         practiceTestButton = new CustomButton("Practice Test");
+        practiceTestButton.setFont(new Font(Common.getDefaultFont(), Font.BOLD, 20)); // 
+
         modifyButton = new CustomButton("Modify Questions");
+        modifyButton.setFont(new Font(Common.getDefaultFont(), Font.BOLD, 20)); // 
 
         panel.add(createPanelWithButton(solveQuestionsButton));
         panel.add(createPanelWithButton(practiceTestButton));

@@ -57,21 +57,21 @@ public class SolveQuestionsPageController {
 
         for (JCheckBox paperBox : solveQuestionsPage.getPaperBoxes()) {
             paperBox.addActionListener(e -> {
-                handleCheckboxSelection(solveQuestionsPage.getPaperBoxes(), (JCheckBox) e.getSource());
+                //handleCheckboxSelection(solveQuestionsPage.getPaperBoxes(), (JCheckBox) e.getSource());
                 filterQuestions();
             });
         }
 
         for (JCheckBox difficultyBox : solveQuestionsPage.getDifficultyBoxes()) {
             difficultyBox.addActionListener(e -> {
-                handleCheckboxSelection(solveQuestionsPage.getDifficultyBoxes(), (JCheckBox) e.getSource());
+                //handleCheckboxSelection(solveQuestionsPage.getDifficultyBoxes(), (JCheckBox) e.getSource());
                 filterQuestions();  
             });
         }
 
         for (JCheckBox timeBox : solveQuestionsPage.getTimeBoxes()) {
             timeBox.addActionListener(e -> {
-                handleCheckboxSelection(solveQuestionsPage.getTimeBoxes(), (JCheckBox) e.getSource());
+                //handleCheckboxSelection(solveQuestionsPage.getTimeBoxes(), (JCheckBox) e.getSource());
                 filterQuestions();
             });
         }
@@ -97,73 +97,103 @@ public class SolveQuestionsPageController {
         });
     }
 
-    private void handleCheckboxSelection(JCheckBox[] checkBoxes, JCheckBox selectedCheckbox) {
-        if (selectedCheckbox.isSelected()) {
-            for (JCheckBox checkBox : checkBoxes) {
-                if (checkBox != selectedCheckbox) {
-                    checkBox.setSelected(false);
-                }
-            }
-        } else {
-            selectedCheckbox.setSelected(false);
-        }
-    }
-
+    //This method filters the questions in the QuestionBank based on the selected subjects, topics, papers, difficulties, and times.
+    //It then updates the questions container to only include the filtered questions.
     private void filterQuestions() {
-        String selectedSubject = (String) solveQuestionsPage.getSubjectBox().getSelectedItem();
-        String selectedTopic = (String) solveQuestionsPage.getTopicBox().getSelectedItem();
-        String selectedPaper = null;
-        String selectedTime = null;
+        Set<String> selectedSubjects = new HashSet<>();
+        Set<String> selectedTopics = new HashSet<>();
+        Set<String> selectedPapers = new HashSet<>();
+        Set<String> selectedDifficulties = new HashSet<>();
+        Set<String> selectedTimes = new HashSet<>();
+        
+        //These next if statements simple check what selections are made to the user and add them to the respective sets
+        //if they are not null or "N/A". For the dropdown boxes, it is first checked if the selected item is not null, and then
+        //it is checked if the selected item is not "N/A". If it is not "N/A", then the selected item is added to the respective set.
+        //This set will later be used to filter the questions in the QuestionBank by comparing each question to the properties in the set.
 
+        // Collect selected subjects
+        if (solveQuestionsPage.getSubjectBox().getSelectedItem() != null) {
+            String selectedSubject = (String) solveQuestionsPage.getSubjectBox().getSelectedItem();
+            if (!selectedSubject.equals("N/A")) {
+                selectedSubjects.add(selectedSubject);
+            }
+        }
+    
+        // Collect selected topics
+        if (solveQuestionsPage.getTopicBox().getSelectedItem() != null) {
+            String selectedTopic = (String) solveQuestionsPage.getTopicBox().getSelectedItem();
+            if (!selectedTopic.equals("N/A")) {
+                selectedTopics.add(selectedTopic);
+            }
+        }
+    
+        // Collect selected papers
         for (JCheckBox paperBox : solveQuestionsPage.getPaperBoxes()) {
             if (paperBox.isSelected()) {
-                selectedPaper = paperBox.getText();
-                break;
+                selectedPapers.add(paperBox.getText());
             }
         }
-
-        String selectedDifficulty = null;
+    
+        // Collect selected difficulties
         for (JCheckBox difficultyBox : solveQuestionsPage.getDifficultyBoxes()) {
             if (difficultyBox.isSelected()) {
-                selectedDifficulty = difficultyBox.getText();
-                break;
+                selectedDifficulties.add(difficultyBox.getText());
             }
         }
-
+    
+        // Collect selected times
         for (JCheckBox timeBox : solveQuestionsPage.getTimeBoxes()) {
             if (timeBox.isSelected()) {
-                selectedTime = timeBox.getText();
-                break;
+                selectedTimes.add(timeBox.getText());
             }
         }
+        
+        //This next line of code creates a new list called filteredQuestions which includes any and all questions
+        //that match the selected subjects, topics, papers, difficulties, and times. It works by iterating through
+        //every question in the QuestionBank and checking if it matches the selected subjects, topics, papers, difficulties.
+        //and times. If it does not does not match any of the selected subjects, topics, papers, difficulties, and times,
+        //matches is false (indicating the question does not match the selected criteria) and the question is not added to the
+        //filteredQuestions list. After iterating through all the questions, the updateQuestions method is called to update
+        //the questions container to only include the list of filtered questions.
 
         ArrayList<Question> filteredQuestions = new ArrayList<>();
-        for (Question question : QuestionBank.getQuestions()) {
+        for (Question question : QuestionBank.questions) {
             boolean matches = true;
-            if (selectedSubject != null && !selectedSubject.equals("N/A") && !question.getSubject().equals(selectedSubject)) {
+    
+            // Check if the question matches the selected subjects
+            if (!selectedSubjects.isEmpty() && !selectedSubjects.contains(question.getSubject())) {
                 matches = false;
             }
-            if (selectedTopic != null && !selectedTopic.equals("N/A") && !question.getTopic().equals(selectedTopic)) {
+    
+            // Check if the question matches the selected topics
+            if (!selectedTopics.isEmpty() && !selectedTopics.contains(question.getTopic())) {
                 matches = false;
             }
-            if (selectedPaper != null && !question.getPaper().equals(selectedPaper)) {
+    
+            // Check if the question matches the selected papers
+            if (!selectedPapers.isEmpty() && !selectedPapers.contains(question.getPaper())) {
                 matches = false;
             }
-            if (selectedDifficulty != null && !question.getDifficulty().equals(selectedDifficulty)) {
+    
+            // Check if the question matches the selected difficulties
+            if (!selectedDifficulties.isEmpty() && !selectedDifficulties.contains(question.getDifficulty())) {
                 matches = false;
             }
-            if (selectedTime != null && !question.getTimeToSolve().equals(selectedTime)) {
+    
+            // Check if the question matches the selected times
+            if (!selectedTimes.isEmpty() && !selectedTimes.contains(question.getTimeToSolve())) {
                 matches = false;
-                System.out.println("time is not a match");
             }
+    
             if (matches) {
                 filteredQuestions.add(question);
             }
         }
-
+    
         updateQuestions(filteredQuestions, solveQuestionsPage.getQuestionContainer());
     }
 
+    /* 
     public void addSubject(String subject) {
         Question.globalSubjectTopicManager.addSubject(subject);
         updateSubjectComboBox();
@@ -183,7 +213,8 @@ public class SolveQuestionsPageController {
         Question.globalSubjectTopicManager.removeTopic(subject, topic);
         updateTopicComboBox();
     }
-
+    */
+    
     private void updateSubjectComboBox() {
         Set<String> subjects = Question.globalSubjectTopicManager.getSubjects();
         Map<String, String> subjectsMap = new HashMap<>();
@@ -255,7 +286,7 @@ public class SolveQuestionsPageController {
                     if (cardComponent instanceof JLabel) {
                         JLabel content = (JLabel) cardComponent;
                         // Get the original image from the current question
-                        ImageIcon originalImage = QuestionBank.getQuestions().get(questionIndex).getQuestionImage();
+                        ImageIcon originalImage = QuestionBank.questions.get(questionIndex).getQuestionImage();
                         if (originalImage != null) {
                             Image tempImage = originalImage.getImage();
                             if (panelWidth > 0) {
