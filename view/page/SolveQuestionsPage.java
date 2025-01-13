@@ -21,14 +21,14 @@ public class SolveQuestionsPage extends CustomPanel {
     private CustomCheckBox[] difficultyBoxes;
     private CustomCheckBox[] timeBoxes;
     private CustomButton homeButton;
-    private JPanel mainContent;
-    private JPanel titlePanel;
+    private CustomPanel mainContent;
+    private CustomPanel titlePanel;
     private JSplitPane splitPane;
-    private JPanel topBar;
-    private JPanel optionsContainer;
-    private JPanel questionsContainer;
+    private CustomPanel topBar;
+    private CustomPanel optionsContainer;
+    private CustomPanel questionsContainer;
     private LinkedList<Question> questions;
-    private JPanel questionsPanel;
+    private CustomPanel questionsPanel;
 
     Font defaultFont = UIManager.getFont("CheckBox.font");
     // Get the default font size
@@ -57,16 +57,7 @@ public class SolveQuestionsPage extends CustomPanel {
         mainContent.add(splitPane, BorderLayout.CENTER);    //Add the split pane which has the 2 primary panels to the main panel
         
         // Add navigation buttons
-        topBar = new CustomPanel(new BorderLayout());
-        topBar.setBackground(new Color(245, 245, 245)); // Set background color
-        topBar.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-
-        homeButton = new CustomButton("Go Home");
-        homeButton.setFont(new Font("Arial", Font.PLAIN, 14));
-        homeButton.setBackground(new Color(220, 220, 220)); // Set button background color
-        homeButton.setFocusPainted(false);
-        
-        topBar.add(homeButton, BorderLayout.WEST);  //Add home button to topBar
+        topBar = createTopBar();
         
         mainContent.add(topBar, BorderLayout.NORTH);    //Add topBar to the main content panel
         
@@ -89,7 +80,19 @@ public class SolveQuestionsPage extends CustomPanel {
         return panel;
     }
     
+    private CustomPanel createTopBar() {
+        CustomPanel panel = new CustomPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
+        homeButton = new CustomButton("Go Home");
+        homeButton.setFont(new Font("Arial", Font.PLAIN, 14));
+        homeButton.setBackground(new Color(220, 220, 220)); // Set button background color
+        homeButton.setFocusPainted(false);
+        
+        panel.add(homeButton, BorderLayout.WEST);  //Add home button to topBar
+
+        return panel;
+    }   
 
     // This method creates the panel that will contain the question sorting options using gridbag layout
     //It adds each element group in its own seperate roww
@@ -300,8 +303,7 @@ public class SolveQuestionsPage extends CustomPanel {
         
         return card;
     }
-    
-    
+        
     public JComboBox<String> getSubjectBox() {
         return subjectBox;
     }
