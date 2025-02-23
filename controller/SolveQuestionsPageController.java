@@ -95,7 +95,12 @@ public class SolveQuestionsPageController {
                 }, 1); // Delay in milliseconds
             }
         });
-    }
+        
+        solveQuestionsPage.getAddQuestionsButton().addActionListener(e -> 
+        solveQuestionsPage.createAddQuestionDialog()
+        );
+        }
+
 
     //This method filters the questions in the QuestionBank based on the selected subjects, topics, papers, difficulties, and times.
     //It then updates the questions container to only include the filtered questions.

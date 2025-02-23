@@ -24,7 +24,7 @@ public class Question {
         ONE_TO_FIVE("1-5"), 
         FIVE_TO_TEN("5-10"), 
         TEN_TO_THIRTYFIVE("10-35"), 
-        THIRTYFIVE_TO_SIXTY("35-60");
+        THIRTYFIVE_TO_SIXTY("35-60+");
 
         private final String label;
 
@@ -40,7 +40,8 @@ public class Question {
     public enum Paper {
         ONE("1"),
         TWO("2"),
-        THREE("3");
+        THREE("3"),
+        NA("N/A");
 
         private final String label;
 

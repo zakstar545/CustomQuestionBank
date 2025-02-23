@@ -40,6 +40,7 @@ public class ModifyQuestionsPage extends CustomPanel{
         titlePanel = createTitlePanel();
         add(titlePanel, BorderLayout.NORTH);
         
+        
     }
 
     private CustomPanel createTitlePanel() {
@@ -206,7 +207,6 @@ public class ModifyQuestionsPage extends CustomPanel{
         return buttonsPanel;
     }
 
-    private createSubjectPopup
 
 
 
