@@ -406,7 +406,7 @@ public class SolveQuestionsPage extends CustomPanel {
         CustomPanel paperPanel = new CustomPanel(new FlowLayout(FlowLayout.LEFT));
         CustomLabel paperLabel = new CustomLabel("Paper:");
         paperPanel.add(paperLabel);
-        String[] papers = {"1", "2", "3"};
+        String[] papers = {"1", "2", "3","N/A"};
         ButtonGroup paperGroup = new ButtonGroup();
         for (String paper : papers) {
             JRadioButton paperBtn = new JRadioButton(paper);
@@ -434,7 +434,7 @@ public class SolveQuestionsPage extends CustomPanel {
         CustomPanel timePanel = new CustomPanel(new FlowLayout(FlowLayout.LEFT));
         CustomLabel timeLabel = new CustomLabel("Time to Solve:");
         timePanel.add(timeLabel);
-        String[] times = {"0-1", "1-5", "5-10", "10-35", "35-60"};
+        String[] times = {"0-1", "1-5", "5-10", "10-35", "35-60+"};
         ButtonGroup timeGroup = new ButtonGroup();
         for (String time : times) {
             JRadioButton timeBtn = new JRadioButton(time);
@@ -467,6 +467,129 @@ public class SolveQuestionsPage extends CustomPanel {
         dialog.setVisible(true);
     }
         
+    //public void createEditQuestionDialog() { TBD
+        // Create dialog
+        JDialog dialog = new JDialog();
+        dialog.setTitle("Add New Question");
+        dialog.setModal(true);
+        dialog.setLayout(new BorderLayout(10, 10));
+    
+        // Main content panel 
+        CustomPanel contentPanel = new CustomPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+    
+        // Upload buttons
+        CustomPanel uploadPanel = createUploadButtonsContainerPanel();
+        contentPanel.add(uploadPanel, gbc);
+        
+
+        // Add title input field
+        gbc.gridy++;
+        CustomLabel titleLabel = new CustomLabel("Question Title:");
+        contentPanel.add(titleLabel, gbc);
+
+        gbc.gridy++;
+        JTextField titleField = new JTextField(20); // 20 columns wide
+        titleField.setFont(new Font(Common.getDefaultFont(), Font.PLAIN, defaultFontSize));
+        contentPanel.add(titleField, gbc);
+
+
+        // Subject dropdown and add button
+        gbc.gridy++;
+        CustomLabel subjectLabel = new CustomLabel("Subject:");
+        contentPanel.add(subjectLabel, gbc);
+        
+        gbc.gridy++;
+        JComboBox<String> subjectDropdown = new JComboBox<>();
+        CustomButton addSubjectBtn = new CustomButton("Add Subject");
+        CustomPanel subjectPanel = new CustomPanel(new BorderLayout(5, 0));
+        subjectPanel.add(subjectDropdown, BorderLayout.CENTER);
+        subjectPanel.add(addSubjectBtn, BorderLayout.EAST);
+        contentPanel.add(subjectPanel, gbc);
+    
+        // Topic dropdown and add button
+        gbc.gridy++;
+        CustomLabel topicLabel = new CustomLabel("Topic:");
+        contentPanel.add(topicLabel, gbc);
+    
+        gbc.gridy++;
+        JComboBox<String> topicDropdown = new JComboBox<>();
+        CustomButton addTopicBtn = new CustomButton("Add Topic"); 
+        CustomPanel topicPanel = new CustomPanel(new BorderLayout(5, 0));
+        topicPanel.add(topicDropdown, BorderLayout.CENTER);
+        topicPanel.add(addTopicBtn, BorderLayout.EAST);
+        contentPanel.add(topicPanel, gbc);
+    
+        // Paper checkboxes
+        gbc.gridy++;
+        CustomPanel paperPanel = new CustomPanel(new FlowLayout(FlowLayout.LEFT));
+        CustomLabel paperLabel = new CustomLabel("Paper:");
+        paperPanel.add(paperLabel);
+        String[] papers = {"1", "2", "3","N/A"};
+        ButtonGroup paperGroup = new ButtonGroup();
+        for (String paper : papers) {
+            JRadioButton paperBtn = new JRadioButton(paper);
+            paperGroup.add(paperBtn);
+            paperPanel.add(paperBtn);
+        }
+        contentPanel.add(paperPanel, gbc);
+    
+        // Difficulty checkboxes
+        gbc.gridy++;
+        CustomPanel difficultyPanel = new CustomPanel(new FlowLayout(FlowLayout.LEFT));
+        CustomLabel difficultyLabel = new CustomLabel("Difficulty:");
+        difficultyPanel.add(difficultyLabel);
+        String[] difficulties = {"Easy", "Medium", "Hard"};
+        ButtonGroup difficultyGroup = new ButtonGroup();
+        for (String difficulty : difficulties) {
+            JRadioButton difficultyBtn = new JRadioButton(difficulty);
+            difficultyGroup.add(difficultyBtn);
+            difficultyPanel.add(difficultyBtn);
+        }
+        contentPanel.add(difficultyPanel, gbc);
+    
+        // Time checkboxes  
+        gbc.gridy++;
+        CustomPanel timePanel = new CustomPanel(new FlowLayout(FlowLayout.LEFT));
+        CustomLabel timeLabel = new CustomLabel("Time to Solve:");
+        timePanel.add(timeLabel);
+        String[] times = {"0-1", "1-5", "5-10", "10-35", "35-60+"};
+        ButtonGroup timeGroup = new ButtonGroup();
+        for (String time : times) {
+            JRadioButton timeBtn = new JRadioButton(time);
+            timeGroup.add(timeBtn);
+            timePanel.add(timeBtn);
+        }
+        contentPanel.add(timePanel, gbc);
+    
+        // Action buttons
+        CustomPanel buttonPanel = new CustomPanel(new FlowLayout(FlowLayout.RIGHT));
+        CustomButton saveButton = new CustomButton("Save");
+        CustomButton cancelButton = new CustomButton("Cancel");
+        buttonPanel.add(saveButton);
+        buttonPanel.add(cancelButton);
+    
+        // Add panels to dialog
+        dialog.add(contentPanel, BorderLayout.CENTER);
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
+    
+        // Button actions
+        cancelButton.addActionListener(e -> dialog.dispose());
+        saveButton.addActionListener(e -> {
+            // Save question logic here
+            dialog.dispose();
+        });
+    
+        // Set dialog properties
+        dialog.setSize(500, 600);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
     public JComboBox<String> getSubjectBox() {
         return subjectBox;
     }

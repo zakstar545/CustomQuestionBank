@@ -43,7 +43,7 @@ public class HomePage extends CustomPanel {
     }
 
     private CustomPanel createButtonsPanel() {
-        CustomPanel panel = new CustomPanel(new GridLayout(0, 3));
+        CustomPanel panel = new CustomPanel(new GridLayout(0, 2));
         panel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0)); // Set default border
 
         solveQuestionsButton = new CustomButton("Solve Questions");
@@ -57,7 +57,7 @@ public class HomePage extends CustomPanel {
 
         panel.add(createPanelWithButton(solveQuestionsButton));
         panel.add(createPanelWithButton(practiceTestButton));
-        panel.add(createPanelWithButton(modifyButton));
+        //panel.add(createPanelWithButton(modifyButton));
 
         return panel;
     }
