@@ -9,7 +9,11 @@ import view.component.CustomPanel;
 import model.core.QuestionBank;
 
 import javax.swing.*;
+
+import controller.SolveQuestionsPageController;
+
 import java.awt.*;
+import java.text.NumberFormat;
 import java.util.LinkedList;
 
 
@@ -34,6 +38,15 @@ public class SolveQuestionsPage extends CustomPanel {
     private CustomButton markschemeButton;
     private CustomButton editQuestionButton;
     private CustomButton deleteQuestionButton;
+    private SolveQuestionsPageController controller;
+    private CustomButton uploadQuestionButton;
+    private CustomButton uploadMarkschemeButton;
+    private CustomLabel questionPreviewLabel;
+    private CustomLabel markschemePreviewLabel;
+
+    public void setSolveQuestionsController(SolveQuestionsPageController controller) {
+        this.controller = controller;
+    }
 
     Font defaultFont = UIManager.getFont("CheckBox.font");
     // Get the default font size
@@ -45,7 +58,7 @@ public class SolveQuestionsPage extends CustomPanel {
         setLayout(new BorderLayout(10, 10)); // Set the layout of the panel
         
         // Load sample questions into QuestionBank
-        QuestionBank.loadSampleQuestions();
+        //QuestionBank.loadSampleQuestions();
         
         // Main content panel with padding
         mainContent = new CustomPanel(new BorderLayout(10, 10));
@@ -213,7 +226,7 @@ public class SolveQuestionsPage extends CustomPanel {
         timePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
         timeBoxes = new CustomCheckBox[5];
-        String[] times = {"0-1", "1-5", "5-10", "10-35", "35-60"};
+        String[] times = {"0-1", "1-5", "5-10", "10-35", "35-60+"};
         for (int i = 0; i < 5; i++) {
             timeBoxes[i] = new CustomCheckBox(times[i]);
             timeBoxes[i].setBackground(new Color(245, 245, 245)); // Set background color
@@ -326,23 +339,54 @@ public class SolveQuestionsPage extends CustomPanel {
         CustomPanel buttonsPanel = new CustomPanel(new GridLayout(1,2));
         buttonsPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     
-        // Question upload button panel
-        CustomPanel uploadQuestionButtonPanel = new CustomPanel(new BorderLayout());
-        CustomButton uploadQuestionButton = new CustomButton("Upload Screenshot of Question");
+        // Question upload panel
+        CustomPanel uploadQuestionPanel = new CustomPanel(new BorderLayout(0, 5)); // Add vertical gap
+        
+        // Question button and preview in their own panel
+        CustomPanel questionButtonAndPreview = new CustomPanel(new BorderLayout(0, 5));
+        uploadQuestionButton = new CustomButton("Upload Screenshot of Question");
         uploadQuestionButton.setFont(new Font(Common.getDefaultFont(), Font.BOLD, defaultFontSize));
-        uploadQuestionButtonPanel.add(uploadQuestionButton, BorderLayout.CENTER);
-        buttonsPanel.add(uploadQuestionButtonPanel);
+        
+        // Add preview label for question
+        questionPreviewLabel = new CustomLabel("No file selected");
+        questionPreviewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        questionPreviewLabel.setFont(new Font(Common.getDefaultFont(), Font.ITALIC, defaultFontSize-2));
+        
+        questionButtonAndPreview.add(uploadQuestionButton, BorderLayout.CENTER);
+        questionButtonAndPreview.add(questionPreviewLabel, BorderLayout.SOUTH);
+        
+        uploadQuestionPanel.add(questionButtonAndPreview, BorderLayout.CENTER);
+        buttonsPanel.add(uploadQuestionPanel);
     
-        // Markscheme upload button panel
-        CustomPanel uploadMarkschemeButtonPanel = new CustomPanel(new BorderLayout());
-        CustomButton uploadMarkschemeButton = new CustomButton("Upload Screenshot of Markscheme");
+        // Markscheme upload panel
+        CustomPanel uploadMarkschemePanel = new CustomPanel(new BorderLayout(0, 5));
+        
+        // Markscheme button and preview in their own panel
+        CustomPanel markschemeButtonAndPreview = new CustomPanel(new BorderLayout(0, 5));
+        uploadMarkschemeButton = new CustomButton("Upload Screenshot of Markscheme");
         uploadMarkschemeButton.setFont(new Font(Common.getDefaultFont(), Font.BOLD, defaultFontSize));
-        uploadMarkschemeButtonPanel.add(uploadMarkschemeButton, BorderLayout.CENTER); // Fixed: Changed from uploadMarkschemeButton.add() to uploadMarkschemeButtonPanel.add()
-        buttonsPanel.add(uploadMarkschemeButtonPanel);
-    
+        
+        // Add preview label for markscheme
+        markschemePreviewLabel = new CustomLabel("No file selected");
+        markschemePreviewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        markschemePreviewLabel.setFont(new Font(Common.getDefaultFont(), Font.ITALIC, defaultFontSize-2));
+        
+        markschemeButtonAndPreview.add(uploadMarkschemeButton, BorderLayout.CENTER);
+        markschemeButtonAndPreview.add(markschemePreviewLabel, BorderLayout.SOUTH);
+        
+        uploadMarkschemePanel.add(markschemeButtonAndPreview, BorderLayout.CENTER);
+        buttonsPanel.add(uploadMarkschemePanel);
+
         return buttonsPanel;
     }
 
+    public CustomButton getUploadQuestionButton() {
+        return uploadQuestionButton;
+    }
+    
+    public CustomButton getUploadMarkschemeButton() {
+        return uploadMarkschemeButton;
+    }
 
     public void createAddQuestionDialog() {
         // Create dialog
@@ -387,12 +431,14 @@ public class SolveQuestionsPage extends CustomPanel {
         subjectPanel.add(subjectDropdown, BorderLayout.CENTER);
         subjectPanel.add(addSubjectBtn, BorderLayout.EAST);
         contentPanel.add(subjectPanel, gbc);
-    
+        
+        addSubjectBtn.addActionListener(e -> createAddSubjectDialog(subjectDropdown));
+
         // Topic dropdown and add button
         gbc.gridy++;
         CustomLabel topicLabel = new CustomLabel("Topic:");
         contentPanel.add(topicLabel, gbc);
-    
+        
         gbc.gridy++;
         JComboBox<String> topicDropdown = new JComboBox<>();
         CustomButton addTopicBtn = new CustomButton("Add Topic"); 
@@ -400,7 +446,21 @@ public class SolveQuestionsPage extends CustomPanel {
         topicPanel.add(topicDropdown, BorderLayout.CENTER);
         topicPanel.add(addTopicBtn, BorderLayout.EAST);
         contentPanel.add(topicPanel, gbc);
-    
+
+        addTopicBtn.addActionListener(e -> createAddTopicDialog(subjectDropdown, topicDropdown));
+
+        // Marks input field
+        gbc.gridy++;
+        CustomLabel marksLabel = new CustomLabel("Marks:");
+        contentPanel.add(marksLabel, gbc);
+
+        gbc.gridy++;
+        JFormattedTextField marksField = new JFormattedTextField(NumberFormat.getIntegerInstance());
+        marksField.setColumns(5);
+        marksField.setFont(new Font(Common.getDefaultFont(), Font.PLAIN, defaultFontSize));
+        marksField.setValue(0); // Default value
+        contentPanel.add(marksField, gbc);
+
         // Paper checkboxes
         gbc.gridy++;
         CustomPanel paperPanel = new CustomPanel(new FlowLayout(FlowLayout.LEFT));
@@ -456,18 +516,145 @@ public class SolveQuestionsPage extends CustomPanel {
     
         // Button actions
         cancelButton.addActionListener(e -> dialog.dispose());
-        saveButton.addActionListener(e -> {
-            // Save question logic here
-            dialog.dispose();
-        });
+        
+            // Initialize dialog functionality through controller
+            controller.initializeAddQuestionDialog(
+                dialog,
+                titleField, 
+                subjectDropdown,
+                topicDropdown,
+                paperGroup,
+                difficultyGroup,
+                timeGroup,
+                uploadQuestionButton,
+                uploadMarkschemeButton,
+                saveButton,
+                questionPreviewLabel,
+                markschemePreviewLabel,
+                marksField
+            );
+
     
         // Set dialog properties
-        dialog.setSize(500, 600);
+        dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
-        
-    //public void createEditQuestionDialog() { TBD
+    
+    public void createAddSubjectDialog(JComboBox<String> subjectDropdown) {
+        // Create dialog
+        JDialog dialog = new JDialog();
+        dialog.setTitle("Add New Subject");
+        dialog.setModal(true);
+        dialog.setLayout(new BorderLayout(10, 10));
+    
+        // Main content panel
+        CustomPanel contentPanel = new CustomPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+    
+        // Add subject input field
+        CustomLabel subjectLabel = new CustomLabel("Subject Name:");
+        contentPanel.add(subjectLabel, gbc);
+    
+        gbc.gridy++;
+        JTextField subjectField = new JTextField(20); // 20 columns wide
+        subjectField.setFont(new Font(Common.getDefaultFont(), Font.PLAIN, defaultFontSize));
+        contentPanel.add(subjectField, gbc);
+    
+        // Action buttons
+        CustomPanel buttonPanel = new CustomPanel(new FlowLayout(FlowLayout.RIGHT));
+        CustomButton addButton = new CustomButton("Add");
+        CustomButton cancelButton = new CustomButton("Cancel");
+        buttonPanel.add(addButton);
+        buttonPanel.add(cancelButton);
+    
+        // Add panels to dialog
+        dialog.add(contentPanel, BorderLayout.CENTER);
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
+    
+        // Button actions
+        cancelButton.addActionListener(e -> dialog.dispose());
+        addButton.addActionListener(e -> {
+            String newSubject = subjectField.getText().trim();
+            if (!newSubject.isEmpty()) {
+                controller.addSubject(newSubject, subjectDropdown);
+                controller.updateSubjectComboBox(subjectBox);
+                controller.updateSubjectComboBox(subjectDropdown);
+                subjectDropdown.setSelectedItem(newSubject); 
+                dialog.dispose();
+            } else {
+                JOptionPane.showMessageDialog(dialog, "Subject name cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    
+        // Set dialog properties
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
+    public void createAddTopicDialog(JComboBox<String> subjectDropdown, JComboBox<String> topicDropdown) {
+        // Create dialog
+        JDialog dialog = new JDialog();
+        dialog.setTitle("Add New Topic");
+        dialog.setModal(true);
+        dialog.setLayout(new BorderLayout(10, 10));
+    
+        // Main content panel
+        CustomPanel contentPanel = new CustomPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+    
+        // Add topic input field
+        CustomLabel topicLabel = new CustomLabel("Topic Name:");
+        contentPanel.add(topicLabel, gbc);
+    
+        gbc.gridy++;
+        JTextField topicField = new JTextField(20); // 20 columns wide
+        topicField.setFont(new Font(Common.getDefaultFont(), Font.PLAIN, defaultFontSize));
+        contentPanel.add(topicField, gbc);
+    
+        // Action buttons
+        CustomPanel buttonPanel = new CustomPanel(new FlowLayout(FlowLayout.RIGHT));
+        CustomButton addButton = new CustomButton("Add");
+        CustomButton cancelButton = new CustomButton("Cancel");
+        buttonPanel.add(addButton);
+        buttonPanel.add(cancelButton);
+    
+        // Add panels to dialog
+        dialog.add(contentPanel, BorderLayout.CENTER);
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
+    
+        // Button actions
+        cancelButton.addActionListener(e -> dialog.dispose());
+        addButton.addActionListener(e -> {
+            String newTopic = topicField.getText().trim();
+            String selectedSubject = (String) subjectDropdown.getSelectedItem();
+            if (!newTopic.isEmpty() && selectedSubject != null && !selectedSubject.equals("N/A")) {
+                controller.addTopic(selectedSubject, newTopic, topicDropdown);
+                controller.updateTopicComboBox(selectedSubject, topicBox);
+                controller.updateTopicComboBox(selectedSubject, topicDropdown);
+                topicDropdown.setSelectedItem(newTopic); 
+                dialog.dispose();
+            } else {
+                JOptionPane.showMessageDialog(dialog, "Topic name cannot be empty and a valid subject must be selected.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    
+        // Set dialog properties
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
+    /* public void createEditQuestionDialog() { 
         // Create dialog
         JDialog dialog = new JDialog();
         dialog.setTitle("Add New Question");
@@ -589,7 +776,8 @@ public class SolveQuestionsPage extends CustomPanel {
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
-
+    */
+    
     public JComboBox<String> getSubjectBox() {
         return subjectBox;
     }

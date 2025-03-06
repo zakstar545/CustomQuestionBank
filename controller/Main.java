@@ -18,6 +18,7 @@ public class Main {
         // Initialize controllers for each page
         HomePageController homeController = new HomePageController(frame);
         SolveQuestionsPageController solveQuestionsController = new SolveQuestionsPageController(frame);
+        frame.getSolveQuestionsPage().setSolveQuestionsController(solveQuestionsController);
         // Add other controllers as needed
     }
 }

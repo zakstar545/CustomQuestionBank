@@ -3,6 +3,7 @@ package controller;
 import model.core.QuestionBank;
 import model.entity.Question;
 import view.page.SolveQuestionsPage;
+import view.component.CustomButton;
 import view.page.Frame;  // Add this import
 
 import javax.swing.*;
@@ -11,7 +12,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.*;
 import java.util.Timer;
-
+import java.text.NumberFormat;
 
 public class SolveQuestionsPageController {
     private SolveQuestionsPage solveQuestionsPage;
@@ -27,8 +28,9 @@ public class SolveQuestionsPageController {
         this.questionContainer = solveQuestionsPage.getQuestionContainer();
         
         // Initialize components
-        updateSubjectComboBox();
-        updateTopicComboBox();
+        updateSubjectComboBox(solveQuestionsPage.getSubjectBox());
+        updateTopicComboBox((String) solveQuestionsPage.getSubjectBox().getSelectedItem(), solveQuestionsPage.getTopicBox());
+
         addActionListeners();
 
         // Scale images initially
@@ -46,7 +48,8 @@ public class SolveQuestionsPageController {
         });
 
         solveQuestionsPage.getSubjectBox().addActionListener(e -> {
-            updateTopicComboBox(); // Let the topic box listener handle filtering
+            String selectedSubject = (String) solveQuestionsPage.getSubjectBox().getSelectedItem();
+            updateTopicComboBox(selectedSubject, solveQuestionsPage.getTopicBox()); // Pass the selected subject and topic combo box
             System.out.println("Topics updated");
         });
         
@@ -198,6 +201,22 @@ public class SolveQuestionsPageController {
         updateQuestions(filteredQuestions, solveQuestionsPage.getQuestionContainer());
     }
 
+    public void updateSubjectComboBox(JComboBox<String> subjectDropdown) {
+        subjectDropdown.removeAllItems();
+        subjectDropdown.addItem("N/A");
+        for (String subject : Question.globalSubjectTopicManager.getSubjects()) {
+            subjectDropdown.addItem(subject);
+        }
+    }
+    
+    public void updateTopicComboBox(String subject, JComboBox<String> topicDropdown) {
+        topicDropdown.removeAllItems();
+        topicDropdown.addItem("N/A");
+        for (String topic : Question.globalSubjectTopicManager.getTopics(subject)) {
+            topicDropdown.addItem(topic);
+        }
+    }
+    
     /* 
     public void addSubject(String subject) {
         Question.globalSubjectTopicManager.addSubject(subject);
@@ -220,26 +239,9 @@ public class SolveQuestionsPageController {
     }
     */
     
-    private void updateSubjectComboBox() {
-        Set<String> subjects = Question.globalSubjectTopicManager.getSubjects();
-        Map<String, String> subjectsMap = new HashMap<>();
-        for (String subject : subjects) {
-            subjectsMap.put(subject, subject);
-        }
-        setSubjects(subjectsMap);
-    }
+    
+    
 
-    private void updateTopicComboBox() {
-        String selectedSubject = (String) solveQuestionsPage.getSubjectBox().getSelectedItem();
-        Set<String> topics;
-
-        if (selectedSubject != null && !selectedSubject.equals("N/A")) {
-            topics = Question.globalSubjectTopicManager.getTopics(selectedSubject);
-        } else {
-            topics = new HashSet<>();
-        }
-        setTopics(topics);
-    }
 
     public void setSubjects(Map<String, String> subjects) {
         JComboBox<String> subjectBox = solveQuestionsPage.getSubjectBox();
@@ -305,4 +307,210 @@ public class SolveQuestionsPageController {
             }
         }
     }
+
+
+
+
+
+
+
+    public void initializeAddQuestionDialog(JDialog dialog, JTextField titleField, 
+    JComboBox<String> subjectDropdown, JComboBox<String> topicDropdown,
+    ButtonGroup paperGroup, ButtonGroup difficultyGroup, ButtonGroup timeGroup,
+    CustomButton uploadQuestionButton, CustomButton uploadMarkschemeButton,
+    CustomButton saveButton, JLabel questionPreviewLabel,    // Add these parameters
+    JLabel markschemePreviewLabel, JFormattedTextField marksField) {
+
+        // Image holders
+        final ImageIcon[] questionImage = {null};
+        final ImageIcon[] markschemeImage = {null};
+
+        // Initialize subject dropdown
+        subjectDropdown.addItem("N/A");
+        for (String subject : Question.globalSubjectTopicManager.getSubjects()) {
+            subjectDropdown.addItem(subject);
+        }
+        subjectDropdown.setSelectedItem("N/A"); // Set the selected item to "N/A"
+
+        // Update topics when subject changes
+        subjectDropdown.addActionListener(e -> {
+            String selectedSubject = (String) subjectDropdown.getSelectedItem();
+            topicDropdown.removeAllItems();
+            topicDropdown.addItem("N/A");
+            if (selectedSubject != null && !selectedSubject.equals("N/A")) {
+                for (String topic : Question.globalSubjectTopicManager.getTopics(selectedSubject)) {
+                    topicDropdown.addItem(topic);
+                }
+            }
+            topicDropdown.setSelectedItem("N/A"); // Set the selected item to "N/A"
+        });
+
+        // Add upload functionality
+        uploadQuestionButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            if (fileChooser.showOpenDialog(dialog) == JFileChooser.APPROVE_OPTION) {
+                questionImage[0] = new ImageIcon(fileChooser.getSelectedFile().getPath());
+                questionPreviewLabel.setText(fileChooser.getSelectedFile().getName()); // Update label
+            }
+        });
+
+        uploadMarkschemeButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            if (fileChooser.showOpenDialog(dialog) == JFileChooser.APPROVE_OPTION) {
+                markschemeImage[0] = new ImageIcon(fileChooser.getSelectedFile().getPath());
+                markschemePreviewLabel.setText(fileChooser.getSelectedFile().getName()); // Update label
+            }
+        });
+
+        // Add save functionality
+        saveButton.addActionListener(e -> {
+            if (validateInputs(titleField, subjectDropdown, topicDropdown, 
+                paperGroup, difficultyGroup, timeGroup, questionImage[0], markschemeImage[0], marksField)) {
+
+                int marks = ((Number) marksField.getValue()).intValue(); // Retrieve marks as integer
+                saveNewQuestion(
+
+                    titleField.getText(),
+                    (String)subjectDropdown.getSelectedItem(),
+                    (String)topicDropdown.getSelectedItem(),
+                    getDifficultyFromSelection(difficultyGroup),
+                    getTimeFromSelection(timeGroup),
+                    getPaperFromSelection(paperGroup),
+                    questionImage[0],
+                    markschemeImage[0],
+                    marks
+                );
+                
+                dialog.dispose();
+                filterQuestions(); // Refresh question list
+            }
+        });
+    }
+
+    private Question.Difficulty getDifficultyFromSelection(ButtonGroup group) {
+        String selected = getSelectedButtonText(group);
+        return Question.Difficulty.valueOf(selected.toUpperCase());
+    }
+
+    private Question.TimeToSolve getTimeFromSelection(ButtonGroup group) {
+        String selected = getSelectedButtonText(group);
+        switch(selected) {
+            case "0-1":
+                return Question.TimeToSolve.ZERO_TO_ONE;
+            case "1-5":
+                return Question.TimeToSolve.ONE_TO_FIVE;
+            case "5-10":
+                return Question.TimeToSolve.FIVE_TO_TEN;
+            case "10-35":
+                return Question.TimeToSolve.TEN_TO_THIRTYFIVE;
+            case "35-60+":
+                return Question.TimeToSolve.THIRTYFIVE_TO_SIXTY;
+            default:
+                throw new IllegalArgumentException("Invalid time range: " + selected);
+        }
+    }
+
+    private Question.Paper getPaperFromSelection(ButtonGroup group) {
+        String selected = getSelectedButtonText(group);
+        if (selected.equals("N/A")) {
+            return Question.Paper.NA;
+        }
+        switch (selected) {
+            case "1":
+                return Question.Paper.ONE;
+            case "2":
+                return Question.Paper.TWO;
+            case "3":
+                return Question.Paper.THREE;
+            default:
+                throw new IllegalArgumentException("Invalid paper: " + selected);
+        }
+    }
+
+    private String getSelectedButtonText(ButtonGroup group) {
+        for (Enumeration<AbstractButton> buttons = group.getElements(); buttons.hasMoreElements();) {
+            AbstractButton button = buttons.nextElement();
+            if (button.isSelected()) {
+                return button.getText();
+            }
+        }
+        return null;
+    }
+
+    //This handles the inputs for the new question dialog. It checks if all fields are filled in and if both images are uploaded.
+    //If all fields are filled in and both images are uploaded, the new question is saved to the QuestionBank and the dialog is closed.
+    private boolean validateInputs(JTextField titleField, JComboBox<String> subjectBox,
+        JComboBox<String> topicBox, ButtonGroup paperGroup, ButtonGroup difficultyGroup,
+        ButtonGroup timeGroup, ImageIcon questionImage, ImageIcon markschemeImage, JFormattedTextField marksField) {
+        
+        if (titleField.getText().isEmpty() ||
+            subjectBox.getSelectedItem() == null ||
+            subjectBox.getSelectedItem().equals("N/A") ||
+            topicBox.getSelectedItem() == null ||
+            topicBox.getSelectedItem().equals("N/A") ||
+            paperGroup.getSelection() == null ||
+            difficultyGroup.getSelection() == null ||
+            timeGroup.getSelection() == null ||
+            questionImage == null ||
+            markschemeImage == null ||
+            marksField.getValue() == null
+            ) {
+            
+            JOptionPane.showMessageDialog(null,
+                "Please fill in all fields and upload both images",
+                "Validation Error",
+                JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
+    private void saveNewQuestion(String title, String subject, String topic,
+        Question.Difficulty difficulty, Question.TimeToSolve timeToSolve,
+        Question.Paper paper, ImageIcon questionImage, ImageIcon markschemeImage, int marks) {
+        
+        Question newQuestion = new Question(
+            subject,
+            topic,
+            difficulty,
+            timeToSolve,
+            paper,
+            questionImage,
+            markschemeImage,
+            marks, // Default marks
+            title
+        );
+
+        QuestionBank.questions.add(newQuestion);
+    }
+
+    public void addSubject(String subject, JComboBox<String> subjectDropdown) {
+        Question.globalSubjectTopicManager.addSubject(subject);
+        updateSubjectComboBox(subjectDropdown); // Update the main subject combo box
+    }
+    /* 
+    public void updateASubjectComboBox(JComboBox<String> subjectDropdown) {
+        subjectDropdown.removeAllItems();
+        subjectDropdown.addItem("N/A");
+        for (String subject : Question.globalSubjectTopicManager.getSubjects()) {
+            subjectDropdown.addItem(subject);
+        }
+    }
+    */
+
+    public void addTopic(String subject, String topic, JComboBox<String> topicDropdown) {
+        Question.globalSubjectTopicManager.addTopic(subject, topic);
+        updateTopicComboBox(topic, topicDropdown); // Update the main topic combo box
+    }
+
+    /*
+    public void updateATopicComboBox(String subject, JComboBox<String> topicDropdown) {
+        topicDropdown.removeAllItems();
+        topicDropdown.addItem("N/A");
+        for (String topic : Question.globalSubjectTopicManager.getTopics(subject)) {
+            topicDropdown.addItem(topic);
+        }
+    }
+    */
+
 }

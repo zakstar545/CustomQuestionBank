@@ -170,7 +170,7 @@ public class ModifyQuestionsPage extends CustomPanel{
         timePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
         timeBoxes = new CustomCheckBox[5];
-        String[] times = {"0-1", "1-5", "5-10", "10-35", "35-60"};
+        String[] times = {"0-1", "1-5", "5-10", "10-35", "35-60+"};
         for (int i = 0; i < 5; i++) {
             timeBoxes[i] = new CustomCheckBox(times[i]);
             timeBoxes[i].setBackground(new Color(245, 245, 245)); // Set background color
