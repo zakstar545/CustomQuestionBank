@@ -17,6 +17,7 @@ import javax.imageio.ImageIO;
 import java.util.LinkedList;
 import java.awt.Graphics;
 
+//This class manages the data persistance of the application.
 public class FileManager {
 
     //Define the file paths. The main data dir is in the user's home dir. In that dir, there are two folders to store question data and subject/topic data.
@@ -25,10 +26,8 @@ public class FileManager {
     private static final String SUBJECTS_TOPICS_FILE = DATA_DIRECTORY + File.separator + "subjects_topics.json";
     private static final String PRACTICE_TEST_FILE = DATA_DIRECTORY + File.separator + "practice_test.json";
 
-    //Make a Gson instance.
     private static final Gson gson = createGsonInstance();
     
-    // Initialize Gson with custom serializers/deserializers for ImageIcon
     private static Gson createGsonInstance() {
         return new GsonBuilder()
             .registerTypeAdapter(ImageIcon.class, new ImageIconSerializer())
@@ -61,7 +60,6 @@ public class FileManager {
     }
     
     // Load questions from file
-    @SuppressWarnings("unchecked")
     public static void loadQuestions() {
         try {
             File file = new File(QUESTIONS_FILE);
@@ -120,6 +118,7 @@ public class FileManager {
         }
     }
     
+    //save oractuce test data
     public static void savePracticeTest() {
         try {
             initializeDataDirectory();
@@ -132,8 +131,8 @@ public class FileManager {
             System.err.println("Failed to save practice test: " + e.getMessage());
         }
     }
-
-        @SuppressWarnings("unchecked")
+    
+    //load ractice test data
     public static void loadPracticeTest() {
         try {
             File file = new File(PRACTICE_TEST_FILE);
@@ -152,7 +151,7 @@ public class FileManager {
                 LinkedList<Question> matchedQuestions = new LinkedList<>();
                 for (Question loadedQuestion : loadedQuestions) {
                     for (Question bankQuestion : QuestionBank.questions) {
-                        if (bankQuestion.getId() == loadedQuestion.getId()) {
+                        if (bankQuestion.getId().equals(loadedQuestion.getId())) {
                             matchedQuestions.add(bankQuestion);
                             break;
                         }
@@ -167,21 +166,21 @@ public class FileManager {
         }
     }
 
-    // Update the saveAllData method to include practice test
+    // Save all data
     public static void saveAllData() {
         saveQuestions();
         saveSubjectsAndTopics();
         savePracticeTest();
     }
 
-    // Update the loadAllData method to include practice test - note the order is important
+    // Load all data
     public static void loadAllData() {
         loadSubjectsAndTopics();
         loadQuestions();
-        loadPracticeTest(); // This must come after loadQuestions to properly match references
+        loadPracticeTest(); 
     }
     
-    // Custom serializer for ImageIcon
+    // Custom serializer for ImageIcon (ai generated)
     private static class ImageIconSerializer implements JsonSerializer<ImageIcon> {
         @Override
         public JsonElement serialize(ImageIcon src, Type typeOfSrc, JsonSerializationContext context) {
@@ -227,7 +226,7 @@ public class FileManager {
         }
     }
     
-    // Custom deserializer for ImageIcon
+    // Custom deserializer for ImageIcon (ai generated)
     private static class ImageIconDeserializer implements JsonDeserializer<ImageIcon> {
         @Override
         public ImageIcon deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -249,4 +248,5 @@ public class FileManager {
             return null;
         }
     }
+
 }

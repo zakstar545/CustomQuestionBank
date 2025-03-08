@@ -1,13 +1,16 @@
 package view.page;
 
-import javax.swing.*;
-import java.awt.*;
 import model.entity.Question;
 import model.core.PracticeTest;
 import view.component.*;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.LinkedList;
 
+//This class has the frontend for the practice test page
 public class PracticeTestPage extends CustomPanel {
+
     private CustomButton homeButton;
     private CustomButton generateTestButton;
     private CustomButton generateMarkschemeButton;
@@ -22,26 +25,21 @@ public class PracticeTestPage extends CustomPanel {
     public PracticeTestPage() {
         setLayout(new BorderLayout(10, 10));
         
-        // Create the title panel
         CustomPanel titlePanel = createTitlePanel();
         add(titlePanel, BorderLayout.NORTH);
         
-        // Create main content panel
         CustomPanel mainContent = new CustomPanel(new BorderLayout(10, 10));
         
-        // Create top bar
         CustomPanel topBar = createTopBar();
         mainContent.add(topBar, BorderLayout.NORTH);
         
-        // Create split pane for question list and options
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, 
         createQuestionsPanel(), 
         createOptionsPanel());
 
-        splitPane.setResizeWeight(0.7); // 70% for questions, 30% for options
+        splitPane.setResizeWeight(0.7);
         mainContent.add(splitPane, BorderLayout.CENTER);
         
-        // Add action buttons at the bottom
         CustomPanel actionButtonsPanel = createActionButtonsPanel();
         mainContent.add(actionButtonsPanel, BorderLayout.SOUTH);
         
@@ -54,7 +52,7 @@ public class PracticeTestPage extends CustomPanel {
     
     private CustomPanel createTitlePanel() {
         CustomPanel panel = new CustomPanel(new BorderLayout());
-        panel.setBackground(new Color(245, 245, 245)); // Set background color
+        panel.setBackground(new Color(245, 245, 245));
 
         CustomLabel title = new CustomLabel("Practice Test Builder");
         title.setHorizontalAlignment(SwingConstants.CENTER);
@@ -69,9 +67,9 @@ public class PracticeTestPage extends CustomPanel {
         CustomPanel panel = new CustomPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
-        homeButton = new CustomButton("< Back to Home");
+        homeButton = new CustomButton("Go Home");
         homeButton.setFont(new Font("Arial", Font.PLAIN, 14));
-        homeButton.setBackground(new Color(220, 220, 220)); // Set button background color
+        homeButton.setBackground(new Color(220, 220, 220));
         homeButton.setFocusPainted(false);
         
         panel.add(homeButton, BorderLayout.WEST);
@@ -80,23 +78,19 @@ public class PracticeTestPage extends CustomPanel {
     }
     
     private JPanel createQuestionsPanel() {
-        // Create panel to hold questions
         CustomPanel panel = new CustomPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         
-        // Add title border similar to Test Options
         CustomPanel containerPanel = new CustomPanel(new BorderLayout());
         containerPanel.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder("Questions Included"),
             BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
         
-        // Create container for questions with vertical BoxLayout - MATCHING SOLVEQPAGE
         questionsContainer = new CustomPanel();
         questionsContainer.setLayout(new BoxLayout(questionsContainer, BoxLayout.Y_AXIS));
         questionsContainer.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         
-        // Add to scrollpane
         JScrollPane scrollPane = new JScrollPane(questionsContainer);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
@@ -107,11 +101,9 @@ public class PracticeTestPage extends CustomPanel {
     }
     
     private CustomPanel createOptionsPanel() {
-        // Matching the style of the question sorting panel in SolveQuestionsPage
         CustomPanel panel = new CustomPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         
-        // Create container with GridBagLayout
         CustomPanel optionsContainer = new CustomPanel(new GridBagLayout());
         optionsContainer.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder("Test Options"),
@@ -155,15 +147,11 @@ public class PracticeTestPage extends CustomPanel {
         summaryPanel.add(estimatedTimeLabel);
         
         optionsContainer.add(summaryPanel, gbc);
-        
-        // REMOVED: Export options section with cover page checkbox and paper size dropdown
-        
-        // Add filler to push everything up
+                
         gbc.gridy++;
         gbc.weighty = 1.0;
         optionsContainer.add(Box.createVerticalGlue(), gbc);
         
-        // Add to scroll pane
         JScrollPane scrollPane = new JScrollPane(optionsContainer);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         panel.add(scrollPane, BorderLayout.CENTER);
@@ -178,20 +166,17 @@ public class PracticeTestPage extends CustomPanel {
             BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
         
-        // Create a panel for the buttons with CENTER alignment instead of RIGHT
         CustomPanel buttonsPanel = new CustomPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         
-        // Create buttons without the colored backgrounds or bold font
         clearAllButton = new CustomButton("Clear All Questions");
         clearAllButton.setFont(new Font("Arial", Font.PLAIN, 14));
         
         generateTestButton = new CustomButton("Generate Practice Test PDF");
-        generateTestButton.setFont(new Font("Arial", Font.PLAIN, 14)); // Changed from BOLD to PLAIN
+        generateTestButton.setFont(new Font("Arial", Font.PLAIN, 14)); 
         
         generateMarkschemeButton = new CustomButton("Generate Markscheme PDF");
-        generateMarkschemeButton.setFont(new Font("Arial", Font.PLAIN, 14)); // Changed from BOLD to PLAIN
+        generateMarkschemeButton.setFont(new Font("Arial", Font.PLAIN, 14)); 
         
-        // Add buttons to panel
         buttonsPanel.add(clearAllButton);
         buttonsPanel.add(generateTestButton);
         buttonsPanel.add(generateMarkschemeButton);
@@ -202,79 +187,65 @@ public class PracticeTestPage extends CustomPanel {
     }
     
     public void updateQuestionsList() {
-        // Clear existing questions
         questionsContainer.removeAll();
         
-        // Get updated list of questions from model
         LinkedList<Question> questions = PracticeTest.practiceQuestions;
         
         if (questions.isEmpty()) {
-            // Display a message when no questions
             CustomLabel emptyLabel = new CustomLabel("No questions added to the test yet");
             emptyLabel.setFont(new Font(Common.getDefaultFont(), Font.ITALIC, 14));
             emptyLabel.setHorizontalAlignment(SwingConstants.CENTER);
             emptyLabel.setForeground(Color.GRAY);
             questionsContainer.add(emptyLabel);
         } else {
-            // Update the questions list - MATCH STYLE FROM SOLVEQPAGE
             for (Question question : questions) {
                 questionsContainer.add(createQuestionCard(question));
-                questionsContainer.add(Box.createRigidArea(new Dimension(0, 10))); // Add 10px spacing
+                questionsContainer.add(Box.createRigidArea(new Dimension(0, 10)));
             }
         }
         
-        // Update summary info
         updateSummaryInfo();
         
-        // Refresh UI
         revalidate();
         repaint();
     }
     
     private CustomPanel createQuestionCard(Question question) {
-        // Match the style from SolveQuestionsPage.createQuestionCard
         CustomPanel card = new CustomPanel(new BorderLayout());
         card.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(Color.LIGHT_GRAY),
             BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
-        card.setBackground(new Color(255, 255, 255)); // Set background color
+        card.setBackground(new Color(255, 255, 255));
         
-        // Question header
         CustomPanel header = new CustomPanel(new BorderLayout());
-        header.setBackground(new Color(255, 255, 255)); // Set background color
+        header.setBackground(new Color(255, 255, 255));
         header.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
         CustomLabel titleLabel = new CustomLabel(question.getTitle());
         titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
         header.add(titleLabel, BorderLayout.NORTH);
         
-        // Topics and subtopics
         CustomPanel topicsPanel = new CustomPanel(new GridLayout(3, 1));
         topicsPanel.setBackground(new Color(255, 255, 255)); // Set background color
         topicsPanel.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
         
-        // Match format from SolveQuestionsPage
         topicsPanel.add(new CustomLabel("Subject: " + question.getSubject() + " | Topic: " + question.getTopic()));
         topicsPanel.add(new CustomLabel("Paper: " + question.getPaper() + " | Difficulty: " + question.getDifficulty()));
         topicsPanel.add(new CustomLabel("Time: " + question.getTimeToSolve() + " min | Marks: " + question.getMarks()));
 
         header.add(topicsPanel, BorderLayout.CENTER);
         
-        // Action buttons - MODIFIED: Now all buttons are in the same panel
         CustomPanel buttonsPanel = new CustomPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         buttonsPanel.setBackground(new Color(255, 255, 255));
         buttonsPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
 
-        // Show Question and Show Markscheme buttons FIRST
         CustomButton showQuestionButton = new CustomButton("Show Question");
         CustomButton showMarkschemeButton = new CustomButton("Show Markscheme");
         
-        // Add the view buttons FIRST (on the left)
         buttonsPanel.add(showQuestionButton);
         buttonsPanel.add(showMarkschemeButton);
         
-        // Then add movement buttons
         CustomButton moveUpButton = new CustomButton("Move Up");
         CustomButton moveDownButton = new CustomButton("Move Down");
         CustomButton removeButton = new CustomButton("Remove");
@@ -288,35 +259,32 @@ public class PracticeTestPage extends CustomPanel {
         }
         buttonsPanel.add(removeButton);
 
-        // Add action listeners
-        showQuestionButton.addActionListener(e -> {
-            // Show question image in a dialog
+        showQuestionButton.addActionListener((_) -> {
             showImageDialog(question.getQuestionImage(), "Question");
         });
         
-        showMarkschemeButton.addActionListener(e -> {
-            // Show markscheme image in a dialog
+        showMarkschemeButton.addActionListener((_) -> {
             showImageDialog(question.getMarkschemeImage(), "Markscheme");
         });
         
-        moveUpButton.addActionListener(e -> {
+        moveUpButton.addActionListener((_) -> {
             PracticeTest.practiceQuestions.remove(question);
             PracticeTest.practiceQuestions.add(index - 1, question);
             updateQuestionsList();
-            savePracticeTestData(); // Add this line
+            savePracticeTestData();
         });
         
-        moveDownButton.addActionListener(e -> {
+        moveDownButton.addActionListener((_) -> {
             PracticeTest.practiceQuestions.remove(question);
             PracticeTest.practiceQuestions.add(index + 1, question);
             updateQuestionsList();
-            savePracticeTestData(); // Add this line
+            savePracticeTestData();
         });
         
-        removeButton.addActionListener(e -> {
+        removeButton.addActionListener((_) -> {
             PracticeTest.removeQuestion(question);
             updateQuestionsList();
-            savePracticeTestData(); // Add this line
+            savePracticeTestData();
         });
 
         header.add(buttonsPanel, BorderLayout.SOUTH);
@@ -325,19 +293,16 @@ public class PracticeTestPage extends CustomPanel {
         return card;
     }
 
-    // Method to show images in a dialog
     private void showImageDialog(ImageIcon image, String title) {
         JDialog dialog = new JDialog();
         dialog.setTitle(title);
         dialog.setModal(true);
-        dialog.setLayout(new BorderLayout(0, 5)); // Add vertical gap between components
+        dialog.setLayout(new BorderLayout(0, 5));
 
-        // Get screen dimensions
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int maxWidth = (int) (screenSize.getWidth() * 0.8);
-        int maxHeight = (int) (screenSize.getHeight() * 0.8);
+        int maxWidth = (int) (screenSize.getWidth() * 0.7);
+        int maxHeight = (int) (screenSize.getHeight() * 0.7);
 
-        // Create panel with dynamic width based on screen size
         JPanel imagePanel = new JPanel() {
             @Override
             public Dimension getPreferredSize() {
@@ -358,7 +323,6 @@ public class PracticeTestPage extends CustomPanel {
         };
         imagePanel.setLayout(new BorderLayout());
 
-        // Scale image
         if (image != null) {
             Dimension panelSize = imagePanel.getPreferredSize();
             Image scaledImage = image.getImage().getScaledInstance(
@@ -367,14 +331,12 @@ public class PracticeTestPage extends CustomPanel {
             imagePanel.add(imageLabel, BorderLayout.CENTER);
         }
 
-        // Add scroll pane
         JScrollPane scrollPane = new JScrollPane(imagePanel);
         dialog.add(scrollPane, BorderLayout.CENTER);
 
-        // Create button panel with proper spacing
         CustomPanel buttonPanel = new CustomPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         CustomButton closeButton = new CustomButton("Close");
-        closeButton.addActionListener(e -> dialog.dispose());
+        closeButton.addActionListener((_) -> dialog.dispose());
         buttonPanel.add(closeButton);
         dialog.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -386,7 +348,6 @@ public class PracticeTestPage extends CustomPanel {
     private void updateSummaryInfo() {
         LinkedList<Question> questions = PracticeTest.practiceQuestions;
         
-        // Calculate totals
         int totalQuestions = questions.size();
         int totalMarks = 0;
         int estimatedTimeMin = 0;
@@ -416,13 +377,11 @@ public class PracticeTestPage extends CustomPanel {
             }
         }
         
-        // Update labels
         totalQuestionsLabel.setText("Total Questions: " + totalQuestions);
         totalMarksLabel.setText("Total Marks: " + totalMarks);
         estimatedTimeLabel.setText("Estimated Time: " + estimatedTimeMin + "-" + estimatedTimeMax + " min");
     }
     
-    // Getters for the controller to access components
     public CustomButton getHomeButton() {
         return homeButton;
     }

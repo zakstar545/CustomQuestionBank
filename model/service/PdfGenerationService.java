@@ -13,7 +13,6 @@ import java.awt.RenderingHints;
 import java.awt.Image;
 import java.io.IOException;
 
-// Import PDFBox classes
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -22,9 +21,8 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
-/**
- * Service to generate PDFs for practice tests and markschemes.
- */
+
+//Service to generate PDFs for practice tests and markschemes with apachepdfbox lin
 public class PdfGenerationService {
     
     /**
@@ -36,6 +34,7 @@ public class PdfGenerationService {
      * @param testTitle The title for the test
      * @return true if successful, false otherwise
      */
+    
     public static boolean generatePDF(File outputFile, LinkedList<Question> questions, boolean includeMarkscheme, String testTitle) {
     System.out.println("Generating " + (includeMarkscheme ? "markscheme" : "practice test") + " PDF: " + outputFile.getPath());
         
@@ -81,7 +80,7 @@ public class PdfGenerationService {
             titleContent.showText("Date: " + java.time.LocalDate.now().toString());
             titleContent.endText();
             
-            // NEW: Collect and display subjects and topics
+            //Collect and display subjects and topics
             Set<String> uniqueSubjects = new HashSet<>();
             Set<String> uniqueTopics = new HashSet<>();
             
@@ -90,7 +89,7 @@ public class PdfGenerationService {
                 uniqueTopics.add(q.getTopic());
             }
             
-            // Display subjects
+            // Display  subjects
             titleContent.beginText();
             titleContent.setFont(PDType1Font.HELVETICA_BOLD, 14);
             titleContent.newLineAtOffset(100, 580);

@@ -15,7 +15,8 @@ public class CustomPanel extends JPanel {
     }
 
     private void initialize() {
-        setBackground(new Color(245, 245, 245)); // Set default background color
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Set default border
+        setBackground(new Color(245, 245, 245)); 
+        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     }
+    
 }

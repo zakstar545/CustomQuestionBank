@@ -7,7 +7,8 @@ import view.page.SolveQuestionsPage;
 import view.component.Common;
 import view.component.CustomButton;
 import view.component.CustomLabel;
-import view.page.Frame;  // Add this import
+import view.page.Frame;
+import model.service.FileManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,14 +16,13 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.*;
 import java.util.Timer;
-import model.service.FileManager;
 
 public class SolveQuestionsPageController {
     private SolveQuestionsPage solveQuestionsPage;
     private Timer resizeTimer;
     private JPanel questionsPanel;
     private JPanel questionContainer;
-    private Frame frame; // Add Frame instance variable
+    private Frame frame;
 
     public SolveQuestionsPageController(Frame frame) {
         this.frame = frame;
@@ -31,13 +31,11 @@ public class SolveQuestionsPageController {
         this.questionContainer = solveQuestionsPage.getQuestionContainer();
         solveQuestionsPage.setFrame(frame);
         
-        // Initialize components
         updateSubjectComboBox(solveQuestionsPage.getSubjectBox());
         updateTopicComboBox((String) solveQuestionsPage.getSubjectBox().getSelectedItem(), solveQuestionsPage.getTopicBox());
         
         addActionListeners();
 
-        // Scale images initially
         SwingUtilities.invokeLater(() -> {
             scaleImages(questionsPanel.getWidth());
             System.out.println("Initial scaling complete");
@@ -46,16 +44,15 @@ public class SolveQuestionsPageController {
 
     private void addActionListeners() {
 
-        solveQuestionsPage.getHomeButton().addActionListener(e -> {
+        solveQuestionsPage.getHomeButton().addActionListener((_) -> {
             CardLayout cardLayout = (CardLayout) frame.getMainPanel().getLayout();
             cardLayout.show(frame.getMainPanel(), "Home");
         });
 
-        solveQuestionsPage.getSubjectBox().addActionListener(e -> {
+        solveQuestionsPage.getSubjectBox().addActionListener((_) -> {
             String selectedSubject = (String) solveQuestionsPage.getSubjectBox().getSelectedItem();
             updateTopicComboBox(selectedSubject, solveQuestionsPage.getTopicBox());
             
-            // Update tooltip based on selection
             if (selectedSubject != null && !selectedSubject.equals("N/A")) {
                 solveQuestionsPage.getSubjectBox().setToolTipText("Right-click to edit or remove the subject '" + selectedSubject + "'");
             } else {
@@ -65,10 +62,9 @@ public class SolveQuestionsPageController {
             System.out.println("Topics updated");
         });
     
-        solveQuestionsPage.getTopicBox().addActionListener(e -> {
+        solveQuestionsPage.getTopicBox().addActionListener((_) -> {
             String selectedTopic = (String) solveQuestionsPage.getTopicBox().getSelectedItem();
             
-            // Update tooltip based on selection
             if (selectedTopic != null && !selectedTopic.equals("N/A")) {
                 solveQuestionsPage.getTopicBox().setToolTipText("Right-click to edit or remove the topic '" + selectedTopic + "'");
             } else {
@@ -79,22 +75,19 @@ public class SolveQuestionsPageController {
         });
 
         for (JCheckBox paperBox : solveQuestionsPage.getPaperBoxes()) {
-            paperBox.addActionListener(e -> {
-                //handleCheckboxSelection(solveQuestionsPage.getPaperBoxes(), (JCheckBox) e.getSource());
+            paperBox.addActionListener((_) -> {
                 filterQuestions();
             });
         }
 
         for (JCheckBox difficultyBox : solveQuestionsPage.getDifficultyBoxes()) {
-            difficultyBox.addActionListener(e -> {
-                //handleCheckboxSelection(solveQuestionsPage.getDifficultyBoxes(), (JCheckBox) e.getSource());
+            difficultyBox.addActionListener((_) -> {
                 filterQuestions();  
             });
         }
 
         for (JCheckBox timeBox : solveQuestionsPage.getTimeBoxes()) {
-            timeBox.addActionListener(e -> {
-                //handleCheckboxSelection(solveQuestionsPage.getTimeBoxes(), (JCheckBox) e.getSource());
+            timeBox.addActionListener((_) -> {
                 filterQuestions();
             });
         }
@@ -115,12 +108,12 @@ public class SolveQuestionsPageController {
                             scaleImages(questionsPanel.getWidth());
                         });
                     }
-                }, 1); // Delay in milliseconds
+                }, 1);
             }
         });
         
-        solveQuestionsPage.getAddQuestionsButton().addActionListener(e -> 
-        solveQuestionsPage.createAddQuestionDialog()
+        solveQuestionsPage.getAddQuestionsButton().addActionListener((_) -> 
+        solveQuestionsPage.showAddQuestionDialog()
         );
 
     }
@@ -237,31 +230,6 @@ public class SolveQuestionsPageController {
             topicDropdown.addItem(topic);
         }
     }
-    
-    /* 
-    public void addSubject(String subject) {
-        Question.globalSubjectTopicManager.addSubject(subject);
-        updateSubjectComboBox();
-    }
-
-    public void removeSubject(String subject) {
-        Question.globalSubjectTopicManager.removeSubject(subject);
-        updateSubjectComboBox();
-    }
-
-    public void addTopic(String subject, String topic) {
-        Question.globalSubjectTopicManager.addTopic(subject, topic);
-        updateTopicComboBox();
-    }
-
-    public void removeTopic(String subject, String topic) {
-        Question.globalSubjectTopicManager.removeTopic(subject, topic);
-        updateTopicComboBox();
-    }
-    */
-    
-    
-    
 
 
     public void setSubjects(Map<String, String> subjects) {
@@ -340,11 +308,6 @@ public class SolveQuestionsPageController {
     }
 
 
-
-
-
-
-
     public void initializeAddQuestionDialog(JDialog dialog, JTextField titleField, 
     JComboBox<String> subjectDropdown, JComboBox<String> topicDropdown,
     ButtonGroup paperGroup, ButtonGroup difficultyGroup, ButtonGroup timeGroup,
@@ -365,7 +328,7 @@ public class SolveQuestionsPageController {
         topicDropdown.addItem("N/A");
 
         // Update topics when subject changes
-        subjectDropdown.addActionListener(e -> {
+        subjectDropdown.addActionListener((_) -> {
             String selectedSubject = (String) subjectDropdown.getSelectedItem();
             topicDropdown.removeAllItems();
             topicDropdown.addItem("N/A");
@@ -378,7 +341,7 @@ public class SolveQuestionsPageController {
         });
 
         // Add upload functionality
-        uploadQuestionButton.addActionListener(e -> {
+        uploadQuestionButton.addActionListener((_) -> {
             JFileChooser fileChooser = new JFileChooser();
             if (fileChooser.showOpenDialog(dialog) == JFileChooser.APPROVE_OPTION) {
                 questionImage[0] = new ImageIcon(fileChooser.getSelectedFile().getPath());
@@ -386,7 +349,7 @@ public class SolveQuestionsPageController {
             }
         });
 
-        uploadMarkschemeButton.addActionListener(e -> {
+        uploadMarkschemeButton.addActionListener((_) -> {
             JFileChooser fileChooser = new JFileChooser();
             if (fileChooser.showOpenDialog(dialog) == JFileChooser.APPROVE_OPTION) {
                 markschemeImage[0] = new ImageIcon(fileChooser.getSelectedFile().getPath());
@@ -395,7 +358,7 @@ public class SolveQuestionsPageController {
         });
 
         // Add save functionality
-        saveButton.addActionListener(e -> {
+        saveButton.addActionListener((_) -> {
             if (validateInputs(titleField, subjectDropdown, topicDropdown, 
                 paperGroup, difficultyGroup, timeGroup, questionImage[0], markschemeImage[0], marksField)) {
 
@@ -475,7 +438,7 @@ public class SolveQuestionsPageController {
         markschemePreviewLabel.setText("Current markscheme image");
 
         // Update topics when subject changes
-        subjectDropdown.addActionListener(e -> {
+        subjectDropdown.addActionListener((_) -> {
             String selectedSubject = (String) subjectDropdown.getSelectedItem();
             topicDropdown.removeAllItems();
             topicDropdown.addItem("N/A");
@@ -487,7 +450,7 @@ public class SolveQuestionsPageController {
         });
 
         // Add upload functionality
-        uploadQuestionButton.addActionListener(e -> {
+        uploadQuestionButton.addActionListener((_) -> {
             JFileChooser fileChooser = new JFileChooser();
             if (fileChooser.showOpenDialog(dialog) == JFileChooser.APPROVE_OPTION) {
                 questionImage[0] = new ImageIcon(fileChooser.getSelectedFile().getPath());
@@ -495,7 +458,7 @@ public class SolveQuestionsPageController {
             }
         });
 
-        uploadMarkschemeButton.addActionListener(e -> {
+        uploadMarkschemeButton.addActionListener((_) -> {
             JFileChooser fileChooser = new JFileChooser();
             if (fileChooser.showOpenDialog(dialog) == JFileChooser.APPROVE_OPTION) {
                 markschemeImage[0] = new ImageIcon(fileChooser.getSelectedFile().getPath());
@@ -504,7 +467,7 @@ public class SolveQuestionsPageController {
         });
 
         // Add save functionality
-        saveButton.addActionListener(e -> {
+        saveButton.addActionListener((_) -> {
             if (validateInputs(titleField, subjectDropdown, topicDropdown, 
                 paperGroup, difficultyGroup, timeGroup, questionImage[0], markschemeImage[0], marksField)) {
                 
@@ -583,7 +546,6 @@ public class SolveQuestionsPageController {
     }
 
     
-
     private Question.Difficulty getDifficultyFromSelection(ButtonGroup group) {
         String selected = getSelectedButtonText(group);
         return Question.Difficulty.valueOf(selected.toUpperCase());
@@ -687,15 +649,6 @@ public class SolveQuestionsPageController {
         updateSubjectComboBox(subjectDropdown); // Update the main subject combo box
         FileManager.saveSubjectsAndTopics();
     }
-    /* 
-    public void updateASubjectComboBox(JComboBox<String> subjectDropdown) {
-        subjectDropdown.removeAllItems();
-        subjectDropdown.addItem("N/A");
-        for (String subject : Question.globalSubjectTopicManager.getSubjects()) {
-            subjectDropdown.addItem(subject);
-        }
-    }
-    */
 
     public void addTopic(String subject, String topic, JComboBox<String> topicDropdown) {
         Question.globalSubjectTopicManager.addTopic(subject, topic);
@@ -703,17 +656,6 @@ public class SolveQuestionsPageController {
         FileManager.saveSubjectsAndTopics();
     }
 
-    /*
-    public void updateATopicComboBox(String subject, JComboBox<String> topicDropdown) {
-        topicDropdown.removeAllItems();
-        topicDropdown.addItem("N/A");
-        for (String topic : Question.globalSubjectTopicManager.getTopics(subject)) {
-            topicDropdown.addItem(topic);
-        }
-    }
-    */
-
-        // In SolveQuestionsPageController.java
     public void editSubject(String oldSubject, String newSubject) {
         String currentTopic = (String) solveQuestionsPage.getTopicBox().getSelectedItem();
 

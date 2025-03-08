@@ -2,8 +2,10 @@ package model.entity;
 
 import model.service.SubjectTopicManager;
 
+import java.util.UUID;
 import javax.swing.ImageIcon;
 
+//This class is used to represent a question in the application
 public class Question {
     public enum Difficulty {
         EASY("Easy"), MEDIUM("Medium"), HARD("Hard");
@@ -54,24 +56,21 @@ public class Question {
         }        
     }
 
-    private static int idCounter = 0; // Static counter for unique IDs
-
-    private int id;    // Unique code for identifying the question
-    private String subject; // Which IB subject
-    private String topic;    // Which topic from that subject
-    private Difficulty difficulty;   // Easy, medium, hard
-    private TimeToSolve timeToSolve;    // Time choices in minutes
-    private Paper paper;     // IB paper 1,2,3
-    private ImageIcon questionImage;    // Image associated with the question
-    private ImageIcon markschemeImage; // Image associated with the markscheme
-    private int marks;    // Marks for the question
+    private UUID id;   
+    private String subject; 
+    private String topic;    
+    private Difficulty difficulty;   
+    private TimeToSolve timeToSolve;   
+    private Paper paper;     
+    private ImageIcon questionImage;    
+    private ImageIcon markschemeImage; 
+    private int marks;   
     private String title;
 
     public static SubjectTopicManager globalSubjectTopicManager = new SubjectTopicManager();
 
-    // Constructor for creating a new question with a unique ID
-    public Question(String subject, String topic, Difficulty difficulty, TimeToSolve timeToSolve, Paper paper, ImageIcon questionImage, ImageIcon markschemeImage, int marks, String title) {
-        this.id = ++idCounter; // Assign a unique ID
+    public Question( String subject, String topic, Difficulty difficulty, TimeToSolve timeToSolve, Paper paper, ImageIcon questionImage, ImageIcon markschemeImage, int marks, String title) {
+        this.id = UUID.randomUUID();
         setSubject(subject);
         setTopic(topic);
         this.difficulty = difficulty;
@@ -84,7 +83,7 @@ public class Question {
     }
 
     // Constructor for loading a question with a specific ID (e.g., from a file)
-    public Question(int id, String subject, String topic, Difficulty difficulty, TimeToSolve timeToSolve, Paper paper, ImageIcon questionImage, ImageIcon markschemeImage, int marks, String title) {
+    public Question(UUID id, String subject, String topic, Difficulty difficulty, TimeToSolve timeToSolve, Paper paper, ImageIcon questionImage, ImageIcon markschemeImage, int marks, String title) {
         this.id = id;
         setSubject(subject);
         setTopic(topic);
@@ -98,10 +97,10 @@ public class Question {
     }
 
     // Getters
-    public int getId() {
+    public UUID getId() {
         return id;
     }
-
+    
     public String getSubject() {
         return subject;
     }
@@ -139,7 +138,7 @@ public class Question {
     }
 
     // Setters
-    public void setId(int id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

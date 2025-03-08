@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+//This class is used to manage the subjects and topics in the application
 public class SubjectTopicManager {
     private Map<String, Set<String>> subjectTopics;
 

@@ -1,6 +1,5 @@
 package model.core;
 
-import javax.swing.ImageIcon;
 import model.entity.Question;
 import java.util.LinkedList;
 

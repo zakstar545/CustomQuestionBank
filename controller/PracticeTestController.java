@@ -9,9 +9,9 @@ import model.service.PdfGenerationService;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.io.File;
 
+//This class is responsible for controlling the PracticeTest actions
 public class PracticeTestController {
     private Frame frame;
     private PracticeTestPage practiceTestPage;
@@ -20,22 +20,18 @@ public class PracticeTestController {
         this.frame = frame;
         this.practiceTestPage = frame.getPracticeTestPage();
         
-        // Initialize the UI
         practiceTestPage.updateQuestionsList();
         
-        // Add action listeners
         addActionListeners();
     }
     
     private void addActionListeners() {
-        // Home button
-        practiceTestPage.getHomeButton().addActionListener(e -> {
+        practiceTestPage.getHomeButton().addActionListener((_) -> {
             CardLayout cardLayout = (CardLayout) frame.getMainPanel().getLayout();
             cardLayout.show(frame.getMainPanel(), "Home");
         });
         
-        // Generate test PDF button
-        practiceTestPage.getGenerateTestButton().addActionListener(e -> {
+        practiceTestPage.getGenerateTestButton().addActionListener((_) -> {
             if (PracticeTest.practiceQuestions.isEmpty()) {
                 JOptionPane.showMessageDialog(frame, 
                     "No questions added to the practice test.", 
@@ -47,8 +43,7 @@ public class PracticeTestController {
             generatePracticeTestPDF(false);
         });
         
-        // Generate markscheme PDF button
-        practiceTestPage.getGenerateMarkschemeButton().addActionListener(e -> {
+        practiceTestPage.getGenerateMarkschemeButton().addActionListener((_) -> {
             if (PracticeTest.practiceQuestions.isEmpty()) {
                 JOptionPane.showMessageDialog(frame, 
                     "No questions added to the practice test.", 
@@ -60,8 +55,7 @@ public class PracticeTestController {
             generatePracticeTestPDF(true);
         });
         
-        // Clear all button
-        practiceTestPage.getClearAllButton().addActionListener(e -> {
+        practiceTestPage.getClearAllButton().addActionListener((_) -> {
             if (!PracticeTest.practiceQuestions.isEmpty()) {
                 int response = JOptionPane.showConfirmDialog(frame, 
                     "Are you sure you want to remove all questions?", 
@@ -72,20 +66,16 @@ public class PracticeTestController {
                     PracticeTest.practiceQuestions.clear();
                     practiceTestPage.updateQuestionsList();
                     
-                    // Save the updated practice test
                     savePracticeTestData();
                 }
             }
         });
     }
     
-    // Method to generate PDF with test questions or markscheme
     private void generatePracticeTestPDF(boolean includeMarkscheme) {
-        // Get file save location
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save " + (includeMarkscheme ? "Markscheme" : "Practice Test") + " PDF");
         
-        // Set default filename based on test title
         String testTitle = practiceTestPage.getTestTitle();
         if (testTitle.isEmpty()) {
             testTitle = "Practice Test";
@@ -104,17 +94,13 @@ public class PracticeTestController {
         PdfGenerationService.generatePDF(outputFile, PracticeTest.practiceQuestions, includeMarkscheme, testTitle);
     }
     
-    // Method to add a question to the practice test and update UI
     public void addQuestionToPracticeTest(Question question) {
-        // Only add if not already in the practice test
         if (!PracticeTest.practiceQuestions.contains(question)) {
             PracticeTest.practiceQuestions.add(question);
             practiceTestPage.updateQuestionsList();
             
-            // Save the updated practice test
             savePracticeTestData();
             
-            // Optional: Show a brief message
             JOptionPane.showMessageDialog(frame, 
                 "Question added to practice test.", 
                 "Question Added", 
