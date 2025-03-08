@@ -1,3 +1,20 @@
 {
-    "java.project.sourcePaths": [""]
+    "java.project.sourcePaths": [
+        "."
+    ],
+    "java.project.referencedLibraries": {
+        "include": [
+            "${workspaceFolder}/lib/gson-2.10.1.jar",
+            "${workspaceFolder}/lib/pdfbox-2.0.27.jar",
+            "${workspaceFolder}/lib/fontbox-2.0.27.jar",
+            "${workspaceFolder}/lib/commons-logging-1.2.jar",
+            "lib/gson-2.10.1.jar",
+            "lib/fontbox-2.0.27.jar",
+            "lib/pdfbox-2.0.27.jar",
+            "lib/commons-logging-1.2.jar"
+        ],
+        "exclude": [
+            "lib/gson-2.10.1-javadoc.jar"
+        ]
+    }
 }

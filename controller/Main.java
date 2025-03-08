@@ -1,5 +1,6 @@
 package controller;
 
+import model.service.FileManager;
 import view.page.Frame;
 import javax.swing.*;
 
@@ -11,14 +12,22 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+    
+        FileManager.loadAllData();
+    
         // Create the frame
         Frame frame = new Frame();
-
+    
         // Initialize controllers for each page
         HomePageController homeController = new HomePageController(frame);
         SolveQuestionsPageController solveQuestionsController = new SolveQuestionsPageController(frame);
+        PracticeTestController practiceTestController = new PracticeTestController(frame);
+        
         frame.getSolveQuestionsPage().setSolveQuestionsController(solveQuestionsController);
-        // Add other controllers as needed
+        
+        // Update practice test page with loaded data
+        frame.getPracticeTestPage().updateQuestionsList();
+    
+        Runtime.getRuntime().addShutdownHook(new Thread(FileManager::saveAllData));
     }
 }
